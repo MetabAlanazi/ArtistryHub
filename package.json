@@ -1,0 +1,33 @@
+{
+  "name": "artistry-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Art commerce platform monorepo",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "clean": "turbo run clean",
+    "prisma:generate": "pnpm -w prisma generate --schema packages/db/prisma/schema.prisma",
+    "prisma:migrate": "pnpm -w prisma migrate dev --name init --schema packages/db/prisma/schema.prisma",
+    "prisma:studio": "pnpm -w prisma studio --schema packages/db/prisma/schema.prisma",
+    "seed": "pnpm --filter=db seed",
+    "seed:auth": "pnpm --filter=db seed:auth",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "prisma": "^5.7.0",
+    "turbo": "^1.12.0",
+    "typescript": "^5.3.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
