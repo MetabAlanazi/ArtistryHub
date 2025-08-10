@@ -1,12 +1,13 @@
 import { NextAuthOptions, getServerSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from './db'
-import bcrypt from 'bcryptjs'
+import { prisma } from '@artistry-hub/db'
+import { verifyPassword, baseAuthOptions } from '@artistry-hub/auth'
 import { checkRateLimit } from './fetcher'
 import './types'
 
+// Extend the base auth options with app-specific configuration
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || "dev-secret-change-in-production",
+  ...baseAuthOptions,
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -45,9 +46,9 @@ export const authOptions: NextAuthOptions = {
 
           let isValid = false
           try {
-            isValid = await bcrypt.compare(credentials.password, user.hashedPassword)
+            isValid = await verifyPassword(credentials.password, user.hashedPassword)
           } catch (error) {
-            console.error('Bcrypt verification error:', error)
+            console.error('Password verification error:', error)
             return null
           }
           
@@ -73,49 +74,6 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
-  session: {
-    strategy: 'jwt' as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user && typeof user === 'object') {
-        const userRole = user.role || (user as any).role
-        const userStatus = user.status || (user as any).status
-        
-        if (userRole && typeof userRole === 'string') {
-          (token as any).role = userRole
-          console.log('JWT token updated with role:', userRole)
-        }
-        if (userStatus && typeof userStatus === 'string') {
-          (token as any).status = userStatus
-          console.log('JWT token updated with status:', userStatus)
-        }
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (token && session.user) {
-        (session.user as any).id = token.sub as string
-        if ((token as any).role) {
-          (session.user as any).role = (token as any).role
-        }
-        if ((token as any).status) {
-          (session.user as any).status = (token as any).status
-        }
-        
-        console.log('Session created for user:', {
-          id: (session.user as any).id,
-          email: session.user.email,
-          role: (session.user as any).role
-        })
-      }
-      return session
-    }
-  },
   pages: {
     signIn: '/login',
     error: '/login',

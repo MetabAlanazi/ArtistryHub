@@ -10,13 +10,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "zod": "^3.22.0",
     "@artistry-hub/db": "workspace:*",
-    "@artistry-hub/utils": "workspace:*"
+    "@artistry-hub/utils": "workspace:*",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.3.0"
   }
 }
-

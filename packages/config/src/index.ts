@@ -61,3 +61,9 @@ export function getAppUrlForRole(role: string): string {
   return roleToAppUrl[role] || env.STORE_APP_URL;
 }
 
+// Export configuration presets
+export { default as eslintConfig } from './eslint-config';
+export { default as prettierConfig } from './prettier-config';
+export { default as tsconfigBase } from './tsconfig/base.json';
+export { default as tailwindBase } from './tailwind/base.js';
+

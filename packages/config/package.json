@@ -10,6 +10,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.0.0",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.0",
     "zod": "^3.22.0"

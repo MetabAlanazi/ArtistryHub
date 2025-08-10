@@ -13,16 +13,18 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean",
-    "db:generate": "cd packages/db && yarn prisma generate",
-    "db:push": "cd packages/db && yarn prisma db push --accept-data-loss",
-    "db:seed": "cd packages/db && yarn prisma db seed",
+    "db:generate": "prisma generate --schema packages/db/prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema packages/db/prisma/schema.prisma",
+    "db:seed": "tsx packages/db/prisma/seed.ts",
     "db:reset": "cd packages/db && yarn prisma migrate reset --force",
-    "db:studio": "cd packages/db && yarn prisma studio"
+    "db:studio": "prisma studio --schema packages/db/prisma/schema.prisma"
   },
   "devDependencies": {
+    "prisma": "^5.22.0",
+    "tsx": "^4.0.0",
     "turbo": "^1.10.0"
   },
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "yarn@4.9.2",
   "engines": {
     "node": ">=18.0.0"
   }
