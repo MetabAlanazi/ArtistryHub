@@ -23,7 +23,7 @@ async function main() {
     create: {
       email: "admin@artistryhub.com",
       name: "Admin User",
-      passwordHash: adminHash,
+      hashedPassword: adminHash,
       role: "admin",
       status: "ACTIVE",
     },
@@ -41,7 +41,7 @@ async function main() {
     create: {
       email: "customer@artistryhub.com",
       name: "Customer User",
-      passwordHash: customerHash,
+      hashedPassword: customerHash,
       role: "customer",
       status: "ACTIVE",
     },
@@ -59,7 +59,7 @@ async function main() {
     create: {
       email: "artist@artistryhub.com",
       name: "Artist User",
-      passwordHash: artistHash,
+      hashedPassword: artistHash,
       role: "artist",
       status: "ACTIVE",
     },
@@ -77,7 +77,7 @@ async function main() {
     create: {
       email: "operator@artistryhub.com",
       name: "Operator User",
-      passwordHash: operatorHash,
+      hashedPassword: operatorHash,
       role: "operator",
       status: "ACTIVE",
     },

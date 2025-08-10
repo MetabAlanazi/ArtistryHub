@@ -6,3 +6,7 @@ export { getToken } from 'next-auth/jwt';
 
 // Export bcrypt utilities
 export { hash, compare } from 'bcryptjs';
+
+// Export our custom types and utilities
+export type { UserRole, AuthUser } from './types';
+export { getCurrentUser } from './server';

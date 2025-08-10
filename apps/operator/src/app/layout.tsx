@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import { OperatorNavbar } from '@/components/operator-navbar'
+import Navbar from './(components)/Navbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,8 +21,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <div className="min-h-screen bg-gray-50">
-            <OperatorNavbar />
-            <main className="pt-16">
+            <Navbar />
+            <main className="mx-auto max-w-7xl px-4 py-6">
               {children}
             </main>
           </div>

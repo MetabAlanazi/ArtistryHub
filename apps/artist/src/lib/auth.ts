@@ -1,8 +1,7 @@
 import { NextAuthOptions, getServerSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from './db'
+import { prisma } from '@artistry-hub/db'
 import bcrypt from 'bcryptjs'
-import { checkRateLimit } from './fetcher'
 import './types'
 
 export const authOptions: NextAuthOptions = {
@@ -21,13 +20,6 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Rate limiting check (basic in-memory for development)
-          const identifier = `auth:${credentials.email}`
-          if (!checkRateLimit(identifier, 5, 15 * 60 * 1000)) {
-            console.log('Rate limit exceeded for:', credentials.email)
-            return null
-          }
-
           const user = await prisma.user.findUnique({
             where: { email: credentials.email }
           })
@@ -37,9 +29,9 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Check if user is active
-          if (user.status !== 'ACTIVE') {
-            console.log('User account is not active:', user.email)
+          // Check if user is active and has artist role
+          if (user.status !== 'ACTIVE' || user.role !== 'artist') {
+            console.log('User not authorized for artist access:', user.email)
             return null
           }
 
@@ -56,7 +48,7 @@ export const authOptions: NextAuthOptions = {
             return null
           }
 
-          console.log('Authentication successful for user:', user.email)
+          console.log('Artist authentication successful for user:', user.email)
           const userObject = {
             id: user.id,
             email: user.email,
@@ -64,7 +56,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
             status: user.status
           }
-          console.log('Returning user object:', userObject)
+          console.log('Returning artist user object:', userObject)
           return userObject
         } catch (error) {
           console.error('Authorization error:', error)
@@ -107,7 +99,7 @@ export const authOptions: NextAuthOptions = {
           (session.user as any).status = (token as any).status
         }
         
-        console.log('Session created for user:', {
+        console.log('Artist session created for user:', {
           id: (session.user as any).id,
           email: session.user.email,
           role: (session.user as any).role

@@ -1,6 +1,5 @@
+import { Role } from '@artistry-hub/db'
 import { DefaultSession } from 'next-auth'
-
-export type Role = 'CUSTOMER' | 'ARTIST' | 'ADMIN' | 'OPERATOR' | 'SERVICE' | 'SOCIAL_WORKER'
 
 declare module 'next-auth' {
   interface Session {

@@ -26,7 +26,7 @@ async function main() {
       name: 'Test Admin',
       role: 'admin',
       status: 'ACTIVE',
-      passwordHash: adminPassword,
+      hashedPassword: adminPassword,
     },
   });
 
@@ -38,7 +38,7 @@ async function main() {
       name: 'Test Artist',
       role: 'artist',
       status: 'ACTIVE',
-      passwordHash: artistPassword,
+      hashedPassword: artistPassword,
     },
   });
 
@@ -50,7 +50,7 @@ async function main() {
       name: 'Test Operator',
       role: 'operator',
       status: 'ACTIVE',
-      passwordHash: operatorPassword,
+      hashedPassword: operatorPassword,
     },
   });
 
@@ -62,7 +62,7 @@ async function main() {
       name: 'Test Social Worker',
       role: 'social_worker',
       status: 'ACTIVE',
-      passwordHash: socialWorkerPassword,
+      hashedPassword: socialWorkerPassword,
     },
   });
 
@@ -74,7 +74,7 @@ async function main() {
       name: 'Test Customer',
       role: 'customer',
       status: 'ACTIVE',
-      passwordHash: customer1Password,
+      hashedPassword: customer1Password,
     },
   });
 
@@ -86,7 +86,7 @@ async function main() {
       name: 'Test Service',
       role: 'service',
       status: 'ACTIVE',
-      passwordHash: servicePassword,
+      hashedPassword: servicePassword,
     },
   });
 

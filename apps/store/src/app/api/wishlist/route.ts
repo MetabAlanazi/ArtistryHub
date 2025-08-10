@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSessionStrict } from '@/lib/auth'
-import { prisma } from '@artistry-hub/db'
+import { prisma } from '../../../lib/db'
 import { wishlistItemSchema } from '@/lib/validators'
 
 export async function GET(request: NextRequest) {

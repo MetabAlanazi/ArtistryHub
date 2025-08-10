@@ -76,13 +76,14 @@ model User {
   id            String   @id @default(cuid())
   email         String   @unique
   name          String?
-  passwordHash  String?  // for credentials authentication
+  hashedPassword String?  // for credentials authentication
   role          Role     @default(customer)
   status        String   @default("ACTIVE") // ACTIVE|SUSPENDED
   mustReauthAt  DateTime? // for session invalidation
   targetAppUrl  String?  // per-user override for app URL
   emailVerified DateTime?
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   addresses     Address[]
   accounts      Account[]
   sessions      Session[]
