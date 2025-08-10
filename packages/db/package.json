@@ -1,28 +1,34 @@
 {
   "name": "@artistry-hub/db",
   "version": "1.0.0",
-  "private": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "description": "Database package for ArtistryHub",
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "clean": "rm -rf dist",
     "seed": "tsx prisma/seed.ts",
-    "seed:auth": "tsx prisma/seed-auth.ts",
+    "seed:rbac": "tsx prisma/seed-rbac.ts",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --force"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.0",
-    "argon2": "^0.31.2"
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.0.0",
-    "prisma": "^5.7.0",
-    "tsx": "^4.6.0",
-    "typescript": "^5.3.0"
+    "prisma": "^5.22.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@artistry-hub/auth": "workspace:*"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

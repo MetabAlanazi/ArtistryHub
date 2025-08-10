@@ -11,7 +11,7 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@artistry-hub/auth": "workspace:*",
+
     "@artistry-hub/config": "workspace:*",
     "@artistry-hub/db": "workspace:*",
     "@artistry-hub/utils": "workspace:*",

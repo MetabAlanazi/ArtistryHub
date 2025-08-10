@@ -1,62 +1,77 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
-import { 
-  LayoutDashboard, 
-  Package, 
-  ShoppingCart, 
-  Users, 
-  Settings,
-  LogOut,
-  User
-} from 'lucide-react'
+import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 
-const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Products', href: '/products', icon: Package },
-  { name: 'Orders', href: '/orders', icon: ShoppingCart },
-  { name: 'Users', href: '/users', icon: Users },
-  { name: 'Settings', href: '/settings', icon: Settings },
-]
+export default function AdminNavbar() {
+  const { data: session } = useSession();
 
-export function AdminNavbar() {
-  const { data: session } = useSession()
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: process.env.STORE_APP_URL || 'http://localhost:3000' });
+  };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary-600">ArtistryHub Admin</span>
-            </Link>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <nav className="hidden md:flex space-x-8">
-              {navigation.map((item) => (
+            <div className="flex-shrink-0">
+              <Link href="/" className="text-white font-bold text-xl">
+                ArtistryHub Admin
+              </Link>
+            </div>
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-4">
                 <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                  href="/"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  <item.icon className="w-4 h-4 mr-2" />
-                  {item.name}
+                  Dashboard
                 </Link>
-              ))}
-            </nav>
-
-            <div className="flex items-center space-x-4">
+                <Link
+                  href="/users"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  User Management
+                </Link>
+                <Link
+                  href="/products"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Products
+                </Link>
+                <Link
+                  href="/orders"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Orders
+                </Link>
+                <Link
+                  href="/analytics"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Analytics
+                </Link>
+                <Link
+                  href="/ops/middleware"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Middleware Control
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <div className="ml-4 flex items-center md:ml-6">
               {session?.user && (
-                <div className="flex items-center space-x-2">
-                  <User className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-700">{session.user.email}</span>
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-300 text-sm">
+                    Welcome, {session.user.name || session.user.email}
+                  </span>
                   <button
-                    onClick={() => signOut()}
-                    className="flex items-center text-gray-600 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors"
+                    onClick={handleSignOut}
+                    className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </button>
                 </div>
@@ -66,6 +81,6 @@ export function AdminNavbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
 

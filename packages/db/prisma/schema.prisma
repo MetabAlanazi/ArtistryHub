@@ -64,28 +64,31 @@ enum SocialPlatform {
 }
 
 enum Role { 
-  customer 
-  artist 
-  admin 
-  operator 
-  service 
+  customer
+  artist
+  admin
+  operator
+  service
+  social_worker
 }
 
 model User {
   id            String   @id @default(cuid())
   email         String   @unique
-  emailVerified DateTime?
   name          String?
-  passwordHash  String?  // null for OAuth-only users
+  passwordHash  String?  // for credentials authentication
   role          Role     @default(customer)
   status        String   @default("ACTIVE") // ACTIVE|SUSPENDED
-  twoFAEnabled  Boolean  @default(false)
+  mustReauthAt  DateTime? // for session invalidation
+  targetAppUrl  String?  // per-user override for app URL
+  emailVerified DateTime?
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
   addresses     Address[]
   accounts      Account[]
   sessions      Session[]
   serviceTokens ServiceToken[]
+  wishlistItems WishlistItem[]
+  @@index([email])
   @@map("common_user")
 }
 
@@ -196,6 +199,7 @@ model Product {
   paintingDetail PaintingDetail?
   posterDetail   PosterDetail?
   collectibleDetail CollectibleDetail?
+  wishlistItems WishlistItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   @@map("catalog_product")
@@ -357,6 +361,17 @@ model SocialChannel {
   lastPosted  DateTime?
   posts       SocialPost[]
   @@map("social_channel")
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  @@unique([userId, productId])
+  @@map("wishlist_items")
 }
 
 model SocialPost {

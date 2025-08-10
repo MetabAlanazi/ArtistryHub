@@ -12,7 +12,8 @@
   "dependencies": {
     "pino": "^8.17.0",
     "zod": "^3.22.0",
-    "nanoid": "^5.0.0"
+    "nanoid": "^5.0.0",
+    "ioredis": "^5.3.2"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

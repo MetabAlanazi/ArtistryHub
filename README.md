@@ -90,6 +90,13 @@ pnpm dev
 
 ## 🔐 Authentication
 
+<!--
+⚠️  CREDENTIALS SECTION - DO NOT UPDATE ⚠️
+These credentials are hardcoded in the database seed file and must match exactly.
+If you need to change credentials, update packages/db/prisma/seed.ts first,
+then update this section to match.
+-->
+
 ### Default Users
 
 - **Admin**: admin@artistryhub.com / password123
@@ -97,6 +104,51 @@ pnpm dev
 - **Artist 1**: artist1@artistryhub.com / password123
 - **Artist 2**: artist2@artistryhub.com / password123
 - **Customer 1**: customer1@example.com / password123
+- **Customer 2**: customer2@example.com / password123
+
+## 🎛️ Middleware Control System
+
+### Overview
+
+The ArtistryHub platform includes a centralized middleware control system that allows administrators to:
+
+- **Dynamically enable/disable** middleware across all applications
+- **Monitor real-time metrics** including request counts, error rates, and latency
+- **Control access** without requiring application restarts or redeployments
+
+### Features
+
+- **Fail-Open Design**: If Redis is unavailable, all middleware runs enabled by default
+- **Real-Time Metrics**: Per-minute buckets with 5-minute sliding window aggregation
+- **Secure Access**: Admin-only routes with CSRF protection
+- **Immediate Effect**: Changes take effect for new requests instantly
+
+### Access
+
+Navigate to **Admin App → Middleware Control** (`/ops/middleware`) to:
+
+1. View current middleware status for all apps
+2. Toggle middleware on/off per application
+3. Monitor request metrics (OK/ERR counts, average latency)
+4. See real-time updates every 5 seconds
+
+### Architecture
+
+```
+Redis Keys:
+├── mw:{app}:enabled     # Boolean flag (1=enabled, 0=disabled)
+└── mw:{app}:m:{bucket}  # Metrics hash (ok, err, sumMs)
+```
+
+### Testing
+
+```bash
+# Test the middleware control system
+node scripts/test-middleware.js
+
+# Verify Redis connection
+docker-compose exec redis redis-cli ping
+```
 
 ## 📊 Database Schema
 
@@ -162,6 +214,17 @@ REDIS_URL="redis://localhost:6379"
 # Auth
 NEXTAUTH_SECRET="your-secret"
 NEXTAUTH_URL="http://localhost:3000"
+
+# App URLs for RBAC
+STORE_APP_URL="http://localhost:3000"
+ADMIN_APP_URL="http://localhost:3001"
+ARTIST_APP_URL="http://localhost:3002"
+OPERATOR_APP_URL="http://localhost:3003"
+SOCIAL_WORKER_APP_URL="http://localhost:3004"
+
+# Admin actions header (simple CSRF)
+OPS_ACTION_SECRET="change-this-secret"
+NEXT_PUBLIC_OPS_ACTION_PUBLIC="change-this-secret"
 
 # Stripe (test keys)
 STRIPE_SECRET_KEY="sk_test_xxx"
@@ -289,5 +352,3 @@ This project is licensed under the MIT License.
 ## 📞 Support
 
 For questions or issues, please open an issue on GitHub or contact the development team.
-
-
