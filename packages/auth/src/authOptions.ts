@@ -69,14 +69,14 @@ export const baseAuthOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = user.role
+        token.role = (user as AuthUser).role
       }
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.role = token.role as UserRole
+      if (token && session.user) {
+        session.user.id = token.id
+        session.user.role = token.role
       }
       return session
     }
@@ -85,9 +85,5 @@ export const baseAuthOptions: NextAuthOptions = {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development',
 }
-
-// Export types for apps to use
-export type { UserRole, AuthUser }
-export { loginSchema, registerSchema, hashPassword, verifyPassword }

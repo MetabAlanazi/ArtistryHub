@@ -7,12 +7,17 @@ export async function getServerSessionStrict(): Promise<AuthUser | null> {
   const session = await getServerSession(baseAuthOptions)
   if (!session?.user) return null
   
+  // Type guard to ensure user has required properties
+  if (!session.user.id || !session.user.email || !session.user.role) {
+    return null
+  }
+  
   return {
     id: session.user.id,
-    email: session.user.email!,
-    name: session.user.name,
-    image: session.user.image,
-    role: session.user.role as UserRole,
+    email: session.user.email,
+    name: session.user.name || null,
+    image: session.user.image || null,
+    role: session.user.role,
   }
 }
 
