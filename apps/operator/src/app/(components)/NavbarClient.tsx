@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { NAV_ITEMS, APP_TITLE } from './nav.config'
 import { useState } from 'react'
+import { signOut } from 'next-auth/react'
 
 function cx(...a: (string | false | undefined)[]) {
   return a.filter(Boolean).join(' ')
@@ -20,6 +21,9 @@ export default function NavbarClient({ user }: { user: MinimalUser | null }) {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         {/* Left: brand + desktop links */}
         <div className="flex items-center gap-6">
+          <Link href="http://localhost:3000/store" className="font-semibold text-blue-600 hover:text-blue-800">
+            🏠 Main Store
+          </Link>
           <Link href="/" className="font-semibold">
             {APP_TITLE}
           </Link>
@@ -57,6 +61,12 @@ export default function NavbarClient({ user }: { user: MinimalUser | null }) {
                 </div>
               )}
               <span className="text-sm text-gray-800">{user.name ?? 'User'}</span>
+                              <button
+                  onClick={() => signOut({ callbackUrl: 'http://localhost:3000/store' })}
+                  className="ml-2 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                >
+                  🚪 Logout
+                </button>
             </div>
           ) : (
             <Link href="/login" className="text-sm underline">

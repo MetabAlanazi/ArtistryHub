@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Enable Corepack
+        run: corepack enable
+        
+      - name: Install dependencies
+        run: yarn install --immutable
+        
+      - name: Lint
+        run: yarn lint
+        
+      - name: Type check
+        run: yarn typecheck
+        
+      - name: Build
+        run: yarn build
+        
+      - name: Test
+        run: yarn test
+        
+      - name: Build packages
+        run: |
+          yarn workspace @artistry-hub/ui build
+          yarn workspace @artistry-hub/auth build
+          yarn workspace @artistry-hub/db build
+          yarn workspace @artistry-hub/config build

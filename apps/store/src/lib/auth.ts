@@ -2,7 +2,7 @@ import { NextAuthOptions, getServerSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@artistry-hub/db'
 import { verifyPassword, baseAuthOptions } from '@artistry-hub/auth'
-import { checkRateLimit } from './fetcher'
+import { checkRateLimit } from './rate-limit'
 import './types'
 
 // Extend the base auth options with app-specific configuration

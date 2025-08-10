@@ -33,11 +33,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@artistry-hub/admin@workspace:apps/admin"
   dependencies:
+    "@artistry-hub/auth": "workspace:*"
     "@artistry-hub/config": "workspace:*"
     "@artistry-hub/db": "workspace:*"
+    "@artistry-hub/ui": "workspace:*"
     "@artistry-hub/utils": "workspace:*"
     "@hookform/resolvers": "npm:^3.3.2"
     "@next-auth/prisma-adapter": "npm:^1.0.7"
+    "@playwright/test": "npm:^1.40.0"
     "@stripe/stripe-js": "npm:^2.0.0"
     "@tanstack/react-query": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.1.5"
@@ -49,10 +52,12 @@ __metadata:
     "@types/react-dom": "npm:^18.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.0.0"
     "@typescript-eslint/parser": "npm:^6.0.0"
+    "@vitejs/plugin-react": "npm:^4.2.0"
     autoprefixer: "npm:^10.4.0"
     bcryptjs: "npm:^2.4.3"
     eslint: "npm:^8.0.0"
     eslint-config-next: "npm:^14.0.0"
+    jsdom: "npm:^23.0.0"
     lucide-react: "npm:^0.294.0"
     next: "npm:^14.0.0"
     next-auth: "npm:^4.24.0"
@@ -63,6 +68,7 @@ __metadata:
     recharts: "npm:^2.8.0"
     tailwindcss: "npm:^3.3.0"
     typescript: "npm:^5.3.0"
+    vitest: "npm:^1.0.0"
     zod: "npm:^3.22.0"
     zustand: "npm:^4.4.0"
   languageName: unknown
@@ -87,9 +93,11 @@ __metadata:
     "@artistry-hub/auth": "workspace:*"
     "@artistry-hub/config": "workspace:*"
     "@artistry-hub/db": "workspace:*"
+    "@artistry-hub/ui": "workspace:*"
     "@artistry-hub/utils": "workspace:*"
     "@hookform/resolvers": "npm:^3.3.2"
     "@next-auth/prisma-adapter": "npm:^1.0.7"
+    "@playwright/test": "npm:^1.40.0"
     "@stripe/stripe-js": "npm:^2.0.0"
     "@tanstack/react-query": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.1.5"
@@ -101,10 +109,12 @@ __metadata:
     "@types/react-dom": "npm:^18.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.0.0"
     "@typescript-eslint/parser": "npm:^6.0.0"
+    "@vitejs/plugin-react": "npm:^4.2.0"
     autoprefixer: "npm:^10.4.0"
     bcryptjs: "npm:^2.4.3"
     eslint: "npm:^8.0.0"
     eslint-config-next: "npm:^14.0.0"
+    jsdom: "npm:^23.0.0"
     lucide-react: "npm:^0.294.0"
     next: "npm:^14.0.0"
     next-auth: "npm:^4.24.0"
@@ -114,6 +124,7 @@ __metadata:
     react-dom: "npm:^18.0.0"
     tailwindcss: "npm:^3.3.0"
     typescript: "npm:^5.3.0"
+    vitest: "npm:^1.0.0"
     zod: "npm:^3.22.0"
     zustand: "npm:^4.4.0"
   languageName: unknown
@@ -129,6 +140,10 @@ __metadata:
     next-auth: "npm:^4.24.0"
     typescript: "npm:^5.0.0"
     zod: "npm:^3.22.0"
+  peerDependencies:
+    next: ^14.0.0
+    react: ^18.0.0
+    react-dom: ^18.0.0
   languageName: unknown
   linkType: soft
 
@@ -172,9 +187,11 @@ __metadata:
     "@artistry-hub/auth": "workspace:*"
     "@artistry-hub/config": "workspace:*"
     "@artistry-hub/db": "workspace:*"
+    "@artistry-hub/ui": "workspace:*"
     "@artistry-hub/utils": "workspace:*"
     "@hookform/resolvers": "npm:^3.3.2"
     "@next-auth/prisma-adapter": "npm:^1.0.7"
+    "@playwright/test": "npm:^1.40.0"
     "@stripe/stripe-js": "npm:^2.0.0"
     "@tanstack/react-query": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.1.5"
@@ -186,10 +203,12 @@ __metadata:
     "@types/react-dom": "npm:^18.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^6.0.0"
     "@typescript-eslint/parser": "npm:^6.0.0"
+    "@vitejs/plugin-react": "npm:^4.2.0"
     autoprefixer: "npm:^10.4.0"
     bcryptjs: "npm:^2.4.3"
     eslint: "npm:^8.0.0"
     eslint-config-next: "npm:^14.0.0"
+    jsdom: "npm:^23.0.0"
     lucide-react: "npm:^0.294.0"
     next: "npm:^14.0.0"
     next-auth: "npm:^4.24.0"
@@ -199,6 +218,7 @@ __metadata:
     react-dom: "npm:^18.0.0"
     tailwindcss: "npm:^3.3.0"
     typescript: "npm:^5.3.0"
+    vitest: "npm:^1.0.0"
     zod: "npm:^3.22.0"
     zustand: "npm:^4.4.0"
   languageName: unknown
@@ -233,6 +253,7 @@ __metadata:
     "@artistry-hub/ui": "workspace:*"
     "@hookform/resolvers": "npm:^3.3.2"
     "@next-auth/prisma-adapter": "npm:^1.0.7"
+    "@playwright/test": "npm:^1.40.0"
     "@stripe/stripe-js": "npm:^2.0.0"
     "@tanstack/react-query": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.1.5"
@@ -1312,6 +1333,17 @@ __metadata:
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
   checksum: 10c0/5bd7576bb1b38a47a7fc7b51ac9f38748e772beebc56200450c4a817d712232b8f1d3ef70532c80840243c657d491cf6a6be1e3a214cff907645819fdc34aadd
+  languageName: node
+  linkType: hard
+
+"@playwright/test@npm:^1.40.0":
+  version: 1.54.2
+  resolution: "@playwright/test@npm:1.54.2"
+  dependencies:
+    playwright: "npm:1.54.2"
+  bin:
+    playwright: cli.js
+  checksum: 10c0/a032d9714a91d6dc40405575ca65ec52f95b0ca95974cd0140e2c12b6c39fbe5311239b2d581b289acaa1e227dd871cf5c43a537f32457f6329723e4add6e6f1
   languageName: node
   linkType: hard
 
@@ -4414,12 +4446,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fsevents@npm:2.3.2":
+  version: 2.3.2
+  resolution: "fsevents@npm:2.3.2"
+  dependencies:
+    node-gyp: "npm:latest"
+  checksum: 10c0/be78a3efa3e181cda3cf7a4637cb527bcebb0bd0ea0440105a3bb45b86f9245b307dc10a2507e8f4498a7d4ec349d1910f4d73e4d4495b16103106e07eee735b
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "fsevents@npm:2.3.3, fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10c0/a1f0c44595123ed717febbc478aa952e47adfc28e2092be66b8ab1635147254ca6cfe1df792a8997f22716d4cbafc73309899ff7bfac2ac3ad8cf2e4ecc3ec60
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
+"fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>":
+  version: 2.3.2
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  dependencies:
+    node-gyp: "npm:latest"
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -5281,7 +5332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^23.0.1":
+"jsdom@npm:^23.0.0, jsdom@npm:^23.0.1":
   version: 23.2.0
   resolution: "jsdom@npm:23.2.0"
   dependencies:
@@ -6466,6 +6517,30 @@ __metadata:
     mlly: "npm:^1.7.4"
     pathe: "npm:^2.0.1"
   checksum: 10c0/19e6cb8b66dcc66c89f2344aecfa47f2431c988cfa3366bdfdcfb1dd6695f87dcce37fbd90fe9d1605e2f4440b77f391e83c23255347c35cf84e7fd774d7fcea
+  languageName: node
+  linkType: hard
+
+"playwright-core@npm:1.54.2":
+  version: 1.54.2
+  resolution: "playwright-core@npm:1.54.2"
+  bin:
+    playwright-core: cli.js
+  checksum: 10c0/44850e20bf35237c8c3dedf1096c655f8af939dde53c5469f72cae3dd744966858a302419b909a73d7a2093323123e7ebcc0fdd55151b4193afb7812c1fd2c88
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.54.2":
+  version: 1.54.2
+  resolution: "playwright@npm:1.54.2"
+  dependencies:
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.54.2"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 10c0/6f642fa70179eee5d5bf8a90df2a6147c9638ff926f4f3ad0a0517396b8a3fe00ccebf13377e032a75b3f0b2610ec1562293e0cfc3bde234181c7a50af8af80a
   languageName: node
   linkType: hard
 

@@ -1,8 +1,8 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { PrismaClient } from '@artistry-hub/db'
 import { formatDateTime } from '@artistry-hub/utils'
+import { PrismaClient } from '@artistry-hub/db'
 import { Check, X, Eye } from 'lucide-react'
 import Link from 'next/link'
 

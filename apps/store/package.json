@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:ui": "vitest",
     "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
     "prisma:gen": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
@@ -41,6 +42,7 @@
     "zustand": "^4.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",

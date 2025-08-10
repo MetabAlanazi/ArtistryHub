@@ -1,7 +1,6 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { PrismaClient } from '@artistry-hub/db'
 import { formatSAR } from '@artistry-hub/utils'
 import { 
   ShoppingCart, 
@@ -12,44 +11,12 @@ import {
   Eye
 } from 'lucide-react'
 
-const prisma = new PrismaClient()
-
 async function getDashboardStats() {
-  const [
-    totalOrders,
-    totalProducts,
-    totalUsers,
-    totalRevenue,
-    recentOrders,
-    topProducts
-  ] = await Promise.all([
-    prisma.order.count(),
-    prisma.product.count(),
-    prisma.user.count(),
-    prisma.payment.aggregate({
-      where: { status: 'PAID' },
-      _sum: { amountCents: true }
-    }),
-    prisma.order.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: { payment: true }
-    }),
-    prisma.product.findMany({
-      take: 5,
-      where: { status: 'PUBLISHED' },
-      orderBy: { createdAt: 'desc' }
-    })
-  ])
-
-  return {
-    totalOrders,
-    totalProducts,
-    totalUsers,
-    totalRevenue: totalRevenue._sum.amountCents || 0,
-    recentOrders,
-    topProducts
+  const response = await fetch('/api/dashboard/stats')
+  if (!response.ok) {
+    throw new Error('Failed to fetch dashboard stats')
   }
+  return response.json()
 }
 
 export function DashboardStats() {

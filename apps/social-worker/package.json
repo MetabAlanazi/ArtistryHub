@@ -3,28 +3,45 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "lint": "eslint src --ext .ts",
+    "dev": "next dev -p 3004",
+    "build": "next build",
+    "start": "next start -p 3004",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "test": "vitest run",
+    "test:ui": "vitest",
+    "clean": "rm -rf .next dist"
   },
   "dependencies": {
+    "@artistry-hub/auth": "workspace:*",
+    "@artistry-hub/config": "workspace:*",
     "@artistry-hub/db": "workspace:*",
+    "@artistry-hub/ui": "workspace:*",
     "@artistry-hub/utils": "workspace:*",
     "bullmq": "^5.0.0",
     "ioredis": "^5.7.0",
+    "lucide-react": "^0.294.0",
+    "next": "^14.0.0",
+    "next-auth": "^4.24.0",
     "pino": "^8.17.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "redis": "^4.6.0",
+    "tailwindcss": "^3.3.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "postcss": "^8.4.0",
     "tsx": "^4.6.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
   }
 }

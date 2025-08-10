@@ -58,6 +58,12 @@ export default function Navigation() {
               Home
             </Link>
             <Link
+              href="/store"
+              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
+            >
+              🏪 Store
+            </Link>
+            <Link
               href="/products"
               className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
             >
