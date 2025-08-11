@@ -1,24 +1,24 @@
 # Operator App
 
-Customer service and platform operations dashboard.
+Order fulfillment and inventory management interface for service operators.
 
 ## Purpose & Scope
 
-The operator app provides a comprehensive interface for customer service operators to:
+The operator app provides comprehensive tools for order processing and fulfillment:
 
-- Handle customer support requests
-- Process orders and refunds
-- Manage platform operations
-- Monitor customer satisfaction
-- Coordinate with artists and customers
+- Order management and processing workflows
+- Inventory tracking and management
+- Customer support and issue resolution
+- Shipping and delivery coordination
+- Performance metrics and reporting
 
 ## Unique Features
 
-- **Customer Support System**: Ticket management and resolution tracking
-- **Order Management**: Process orders, refunds, and disputes
-- **Communication Hub**: Coordinate between customers, artists, and admin
-- **Performance Metrics**: Track response times and customer satisfaction
-- **Escalation Workflows**: Route complex issues to appropriate teams
+- **Order Management**: Process, track, and fulfill customer orders
+- **Inventory Control**: Monitor stock levels and manage product availability
+- **Customer Support**: Handle customer inquiries and resolve issues
+- **Shipping Coordination**: Manage delivery schedules and tracking
+- **Performance Analytics**: Track fulfillment metrics and efficiency
 
 ## Local Development
 
@@ -35,7 +35,6 @@ yarn build
 # Run tests
 yarn test
 yarn test:ui
-yarn test:e2e
 
 # Type checking
 yarn typecheck
@@ -58,7 +57,6 @@ NEXTAUTH_URL="http://localhost:3003"
 
 # App-specific
 NEXT_PUBLIC_APP_NAME="ArtistryHub Operator"
-NEXT_PUBLIC_SUPPORT_EMAIL="support@artistryhub.com"
 ```
 
 ## Authentication Flow
@@ -66,8 +64,27 @@ NEXT_PUBLIC_SUPPORT_EMAIL="support@artistryhub.com"
 This app uses the shared `@artistry-hub/auth` package:
 
 - **Route**: `app/api/auth/[...nextauth]/route.ts` imports from `@artistry-hub/auth`
-- **Middleware**: `src/middleware.ts` enforces OPERATOR + ADMIN access
+- **Middleware**: `src/middleware.ts` enforces operator-only access
 - **Session**: Uses NextAuth.js with JWT strategy
+
+## Test User Accounts
+
+For development and testing, use these pre-configured operator accounts:
+
+| Role | Email | Password | Access |
+|------|-------|----------|---------|
+| **Operator 1** | `operator1@artistryhub.com` | `Operator2024!Work#` | Store + Operator |
+| **Operator 2** | `operator2@artistryhub.com` | `Operator2024!Work#` | Store + Operator |
+| **Admin 1** | `admin@artistryhub.com` | `Admin2024!Secure#` | All apps |
+| **Admin 2** | `admin2@artistryhub.com` | `Admin2024!Secure#` | All apps |
+
+> ⚠️ **IMPORTANT**: These are test accounts only. Do not modify or use in production.
+
+## Access Control
+
+- **Operator Role Required**: Only users with `operator` or `admin` role can access this application
+- **Middleware Protection**: Automatic redirect for non-operator users
+- **Session Validation**: Strict authentication checks on all routes
 
 ## Testing
 
@@ -77,48 +94,64 @@ This app uses the shared `@artistry-hub/auth` package:
 - Mocked Next.js router and NextAuth
 - Test setup in `src/test/setup.ts`
 
-### E2E Tests (Playwright)
+### Authentication Testing
 
-- Full user journey testing
-- Authentication flows
-- Customer support workflows
+- Role-based access control verification
+- Session management testing
+- Middleware protection validation
 
-## Database
+## Security Features
 
-Uses the shared Prisma schema from `@artistry-hub/db`:
+- **Strong Passwords**: All test users use secure passwords
+- **bcrypt Hashing**: 12 salt rounds for password security
+- **Role-Based Access**: Strict operator/admin middleware enforcement
+- **Session Management**: Secure JWT token handling
 
-- Singleton Prisma client
-- Shared User model with role-based access
-- Database scripts available at root level
+## Troubleshooting
 
-## Navigation
+### Common Issues
 
-**Important**: This app has its own unique navbar/branding and does NOT import navigation components from `@artistry-hub/ui`. All navigation is app-specific.
+1. **Access Denied**
+   - Ensure you're logged in with an operator or admin account
+   - Use correct password: `Operator2024!Work#`
+   - Run `yarn db:seed:readme` from root to refresh users
 
-## Dependencies
+2. **Authentication Errors**
+   - Verify NEXTAUTH_SECRET in .env.local
+   - Ensure database is running and accessible
+   - Check Prisma client generation
 
-- **Shared**: `@artistry-hub/ui`, `@artistry-hub/db`
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS (extends shared config)
-- **Testing**: Vitest, React Testing Library, Playwright
-- **Forms**: React Hook Form + Zod validation
-
-## Build & Deploy
+### Reset & Recovery
 
 ```bash
-# Build the app
+# From project root
+yarn db:seed:readme  # Refresh test users
+yarn db:reset        # Complete database reset
+```
+
+## Architecture
+
+- **Next.js 14**: App Router with TypeScript
+- **Authentication**: NextAuth.js with shared auth package
+- **Database**: Prisma ORM with MySQL/PostgreSQL
+- **Styling**: Tailwind CSS with custom components
+- **State Management**: React hooks and context
+
+## Deployment
+
+```bash
+# Build for production
 yarn build
 
 # Start production server
 yarn start
 
-# Docker (if configured)
-docker build -t artistry-hub-operator .
+# Environment variables required in production
+NEXTAUTH_SECRET
+DATABASE_URL
+NEXTAUTH_URL
 ```
 
-## Troubleshooting
+---
 
-1. **TypeScript errors**: Ensure `@artistry-hub/db` is built
-2. **Database connection**: Verify DATABASE_URL and Prisma client generation
-3. **Authentication**: Check NextAuth configuration and session handling
-4. **Build issues**: Run `yarn db:generate` from root to ensure Prisma client is up to date
+> **🔒 Security Note**: All credentials in this README are for testing only. Never use these accounts in production environments.

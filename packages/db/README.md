@@ -1,77 +1,112 @@
-# @artistry-hub/db
+# Database Package
 
-Centralized database management with Prisma ORM for the ArtistryHub platform.
+Database client, schema, and seeding utilities for ArtistryHub.
 
-## What it exports
+## Purpose & Scope
 
-This package provides a unified database solution for all apps in the monorepo:
+This package provides centralized database management for the entire ArtistryHub platform:
 
-- **Prisma Client**: Singleton PrismaClient instance
-- **Database Schema**: Single source of truth for all database models
-- **Type Definitions**: Generated TypeScript types from Prisma schema
-- **Migration Management**: Centralized database migrations
-- **Seed Scripts**: Database seeding utilities
+- **Prisma Schema**: Single source of truth for database structure
+- **Database Client**: Singleton Prisma client for all applications
+- **Seeding Scripts**: Comprehensive test data generation
+- **Migrations**: Database schema evolution management
 
-## How to consume
+## Features
 
-### 1. Import Prisma Client
+- **Unified Schema**: Single Prisma schema shared across all apps
+- **Secure Seeding**: Test users with strong, hashed passwords
+- **Role-Based Access**: Comprehensive user role management
+- **Audit Logging**: Track all user actions and system events
+- **Migration Management**: Safe database schema evolution
 
-```typescript
-import { prisma } from "@artistry-hub/db";
+## Installation
 
-// Use the singleton client
-const users = await prisma.user.findMany();
-```
+```bash
+# From project root
+yarn install
 
-### 2. Import Types
-
-```typescript
-import type { User, UserRole } from "@artistry-hub/db";
-
-// Use generated types
-const user: User = {
-  id: "1",
-  email: "user@example.com",
-  role: "customer" as UserRole,
-  // ... other fields
-};
-```
-
-### 3. Database Operations
-
-```typescript
-import { prisma } from "@artistry-hub/db";
-
-// CRUD operations
-const user = await prisma.user.create({
-  data: {
-    email: "new@example.com",
-    hashedPassword: "hashed_password",
-    role: "customer",
-  },
-});
+# Generate Prisma client
+yarn db:generate
 ```
 
 ## Database Schema
 
-The package maintains a single Prisma schema at `packages/db/prisma/schema.prisma` with:
+The schema includes comprehensive models for:
 
-- **User Model**: Centralized user management with role-based access
-- **Relationships**: Proper foreign key relationships between models
-- **Indexes**: Optimized database performance
-- **Migrations**: Version-controlled database schema changes
+- **Users**: Authentication, roles, and profiles
+- **Products**: Artwork, commissions, and inventory
+- **Orders**: Customer purchases and fulfillment
+- **Artists**: Portfolios, commissions, and profiles
+- **Support**: Tickets, communications, and assistance
 
-## Environment Variables
+### User Roles
 
-Required environment variables:
+- `ADMIN` - Full platform access
+- `ARTIST` - Creative platform access
+- `OPERATOR` - Order fulfillment access
+- `SOCIAL_WORKER` - Community support access
+- `CUSTOMER` - Store access only
+- `SERVICE` - Support and assistance access
 
-```env
-DATABASE_URL="mysql://user:password@localhost:3306/artistry_hub"
-```
+## Seeding Scripts
 
-## Database Scripts
+### Main Seeding (`yarn db:seed`)
 
-Available scripts from the root package.json:
+Creates complete test environment with 12 users:
+
+| Role | Count | Password Pattern |
+|------|-------|------------------|
+| **Admin** | 2 | `Admin2024!Secure#` |
+| **Artist** | 2 | `Artist2024!Creative#` |
+| **Operator** | 2 | `Operator2024!Work#` |
+| **Social Worker** | 2 | `Social2024!Help#` |
+| **Customer** | 2 | `Customer2024!Shop#` |
+| **Service** | 2 | `Service2024!Support#` |
+
+### README Users (`yarn db:seed:readme`)
+
+Creates only the users documented in the README:
+
+- **Email**: `admin@artistryhub.com` / **Password**: `Admin2024!Secure#`
+- **Email**: `artist1@artistryhub.com` / **Password**: `Artist2024!Creative#`
+- **Email**: `operator1@artistryhub.com` / **Password**: `Operator2024!Work#`
+- **Email**: `social1@artistryhub.com` / **Password**: `Social2024!Help#`
+- **Email**: `customer1@example.com` / **Password**: `Customer2024!Shop#`
+
+### Authentication Testing (`yarn seed:auth`)
+
+Creates users specifically for auth testing:
+
+- Focuses on authentication flows
+- Includes service tokens for API access
+- Creates artist profiles and related data
+
+### RBAC Testing (`yarn seed:rbac`)
+
+Creates users for role-based access control testing:
+
+- Tests all user roles and permissions
+- Includes comprehensive test data
+- Perfect for authorization testing
+
+## Security Features
+
+### Password Security
+
+- **Strong Passwords**: All test users use secure passwords
+- **bcrypt Hashing**: 12 salt rounds for maximum security
+- **No Weak Passwords**: Eliminated common weak patterns
+- **Unique Patterns**: Each role has distinct password format
+
+### Test User Management
+
+- **Automatic Deletion**: Customer users deleted and recreated on every run
+- **Fresh Data**: Ensures consistent test environment
+- **No Conflicts**: Prevents old data from interfering with tests
+
+## Usage
+
+### Development Setup
 
 ```bash
 # Generate Prisma client
@@ -80,94 +115,109 @@ yarn db:generate
 # Run migrations
 yarn db:migrate
 
-# Open Prisma Studio
-yarn db:studio
-
 # Seed database
 yarn db:seed
+
+# Open Prisma Studio
+yarn db:studio
 ```
 
-## Singleton Pattern
-
-The package implements a singleton pattern for PrismaClient to prevent multiple database connections:
-
-```typescript
-// packages/db/src/client.ts
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
-```
-
-## Versioning & Internal Dependency Rules
-
-- **Version**: Follows semantic versioning
-- **Breaking Changes**: Major version bumps for schema changes
-- **Internal Dependencies**: All apps must use the same version
-- **Updates**: Database migrations must be run when updating
-
-## Development
+### Testing
 
 ```bash
-# From root directory
-yarn workspace @artistry-hub/db dev
-yarn workspace @artistry-hub/db build
-yarn workspace @artistry-hub/db test
+# Quick user refresh
+yarn db:seed:readme
+
+# Full database reset
+yarn db:reset
+
+# Specific seeding
+yarn seed:auth
+yarn seed:rbac
 ```
 
-## Database Management
-
-### Migrations
+### Production
 
 ```bash
-# Create new migration
-npx prisma migrate dev --schema packages/db/prisma/schema.prisma
+# Generate production client
+yarn db:generate
 
-# Apply migrations in production
-npx prisma migrate deploy --schema packages/db/prisma/schema.prisma
+# Run production migrations
+yarn db:migrate:deploy
+
+# Build package
+yarn build
 ```
 
-### Seeding
+## Environment Variables
 
-```bash
-# Run seed script
-yarn db:seed
+Required environment variables:
 
-# Custom seed data
-npx tsx packages/db/prisma/seed.ts
+```env
+# Database connection
+DATABASE_URL="mysql://user:password@localhost:3306/artistry_hub"
+
+# Optional: Database shadow (for migrations)
+SHADOW_DATABASE_URL="mysql://user:password@localhost:3306/artistry_hub_shadow"
 ```
 
-## Testing
+## Dependencies
 
-The package includes tests for:
-
-- Prisma client initialization
-- Database connection management
-- Type generation accuracy
-- Migration scripts
-
-## Security Features
-
-- **Connection Pooling**: Efficient database connection management
-- **Environment Isolation**: Separate databases for dev/staging/prod
-- **Migration Safety**: Safe database schema updates
-- **Type Safety**: Full TypeScript support for all database operations
+- **@prisma/client**: Database ORM
+- **bcryptjs**: Password hashing
+- **@artistry-hub/auth**: Authentication utilities
 
 ## Troubleshooting
 
-1. **Connection Issues**: Verify DATABASE_URL and database accessibility
-2. **Type Errors**: Run `yarn db:generate` to regenerate Prisma client
-3. **Migration Failures**: Check database permissions and existing schema
-4. **Build Issues**: Ensure Prisma client is generated before building apps
+### Common Issues
 
-## Performance Considerations
+1. **Prisma Client Not Generated**
+   ```bash
+   yarn db:generate
+   ```
 
-- **Connection Pooling**: Configured for optimal performance
-- **Query Optimization**: Use Prisma's query optimization features
-- **Indexing**: Proper database indexes for common queries
-- **Caching**: Implement application-level caching where appropriate
+2. **Migration Errors**
+   ```bash
+   yarn db:reset
+   yarn db:migrate
+   ```
+
+3. **Seeding Failures**
+   ```bash
+   yarn db:seed:readme
+   ```
+
+### Reset & Recovery
+
+```bash
+# Complete database reset
+yarn db:reset
+
+# Regenerate client
+yarn db:generate
+
+# Fresh seeding
+yarn db:seed
+```
+
+## Contributing
+
+When modifying the database schema:
+
+1. **Create Migration**: `yarn db:migrate`
+2. **Update Seeding**: Modify relevant seed scripts
+3. **Test Changes**: Verify with `yarn db:seed:readme`
+4. **Update Documentation**: Reflect changes in README files
+
+## Security Notes
+
+⚠️ **IMPORTANT**: All credentials in this package are for testing only.
+
+- **Never use test passwords in production**
+- **Do not modify test user credentials**
+- **All seeding scripts include security warnings**
+- **Customer users are recreated on every run**
+
+---
+
+> **🔒 Security Reminder**: All test credentials are for development and testing only. Never use these accounts in production environments.

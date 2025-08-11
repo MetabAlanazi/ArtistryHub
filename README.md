@@ -1,88 +1,26 @@
 # ArtistryHub - Multi-Package Next.js Monorepo
 
-A modern, scalable platform for artists and social workers built with Next.js, TypeScript, and Turborepo.
+> 🎨 **A comprehensive platform for artists, social workers, and art commerce**
 
-## 🎯 **CURRENT STATUS: FULLY FUNCTIONAL** ✅
-
-**All apps are working and properly connected with automatic redirects to the main store.**
-
-## ⚡ **QUICK START (5 minutes)**
+## 🚀 **Quick Start**
 
 ```bash
-# 1. Install dependencies
+# Clone and setup
+git clone <your-repo-url>
+cd ArtistryHub
 yarn install
 
-# 2. Set up environment variables
-cp env.example .env.local
-
-# 3. Start the main store app
-cd apps/store && yarn dev --port 3000
-
-# 4. Open in browser
-# Main page: http://localhost:3000 (auto-redirects to store)
-# Store: http://localhost:3000/store
-```
-
-**🎉 That's it! The store will work immediately with the pre-configured test users above.**
-
-## 🏗️ Architecture
-
-This monorepo is organized into:
-
-### **User Roles & Access**
-
-The platform supports **6 distinct user roles** with different access levels:
-
-| Role                 | Description            | Access                             | Purpose                                  |
-| -------------------- | ---------------------- | ---------------------------------- | ---------------------------------------- |
-| **👑 Admin**         | System administrators  | All apps (3000-3004)               | Platform management, user administration |
-| **🎨 Artist**        | Creative professionals | Store + Artist (3000, 3002)        | Artwork submission, portfolio management |
-| **⚙️ Operator**      | Service operators      | Store + Operator (3000, 3003)      | Order fulfillment, customer support      |
-| **🤝 Social Worker** | Community workers      | Store + Social Worker (3000, 3004) | Community outreach, social programs      |
-| **👤 Customer**      | End users              | Store only (3000)                  | Shopping, orders, wishlist               |
-| **🔧 Service**       | Support staff          | Store + Service (3000)             | Technical support, customer service      |
-
-> **Security**: Each role has access only to their designated applications and features.
-
-### Apps (`apps/`)
-
-- **`store`** - Customer-facing e-commerce platform (port 3000) - **MAIN APP**
-- **`admin`** - Administrative dashboard (port 3001)
-- **`artist`** - Artist management interface (port 3002)
-- **`operator`** - Service operator interface (port 3003)
-- **`social-worker`** - Social worker tools (port 3004)
-
-> **🚀 Smart Routing**: The main page (`localhost:3000`) automatically redirects to the store (`localhost:3000/store`)
-
-### Packages (`packages/`)
-
-- **`@artistry-hub/auth`** - Centralized NextAuth configuration
-- **`@artistry-hub/db`** - Prisma database client and schema
-- **`@artistry-hub/ui`** - Shared UI components (generic only)
-- **`@artistry-hub/config`** - Shared configuration (ESLint, TypeScript, Tailwind)
-- **`@artistry-hub/utils`** - Utility functions
-- **`@artistry-hub/api`** - API utilities
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+
-- Yarn 4 (Berry)
-- Corepack enabled
-
-### Installation
-
-```bash
-# Enable Corepack (if not already enabled)
-corepack enable
-
-# Install dependencies
-yarn install
-
-# Set up environment variables
+# Environment setup
 cp env.example .env.local
 # Edit .env.local with your configuration
+
+# Database setup
+yarn db:generate
+yarn db:migrate
+yarn db:seed
+
+# Start development
+yarn dev
 ```
 
 ## 🔑 **CREDENTIALS & ACCESS** (DO NOT CHANGE)
@@ -134,7 +72,7 @@ cp env.example .env.local
 
 > All apps redirect to the main store (`http://localhost:3000/store`) when users log out.
 
-### Development
+## 🛠️ **Development**
 
 ```bash
 # Run all apps in development mode
@@ -162,7 +100,7 @@ yarn typecheck
 yarn lint
 ```
 
-## 🔐 Authentication Architecture
+## 🔐 **Authentication Architecture**
 
 - **Shared Auth Package**: `@artistry-hub/auth` provides base NextAuth configuration
 - **Per-App Routes**: Each app defines its own `/api/auth/[...nextauth]/route.ts`
@@ -170,14 +108,14 @@ yarn lint
 - **Independent Branding**: Each app maintains unique navbar/branding
 - **Unified Navigation**: All apps have "Main Store" links and redirect to store on logout
 
-### Role Hierarchy
+### **Role Hierarchy**
 
 - `ADMIN` - Access to all apps
 - `ARTIST` - Access to artist + store apps
 - `OPERATOR` - Access to operator + store apps
 - `CUSTOMER` - Access to store app only
 
-## 🗄️ Database & Migrations
+## 🗄️ **Database & Migrations**
 
 Single Prisma schema at `packages/db/prisma/schema.prisma`:
 
@@ -190,9 +128,6 @@ yarn db:migrate
 
 # Open Prisma Studio
 yarn db:studio
-
-# Seed database
-yarn db:seed
 ```
 
 ### **Database Seeding**
@@ -206,7 +141,7 @@ The database comes pre-seeded with **12 test users** (2 of each role type) for c
 - **👤 2 Customer users** - Store-only access
 - **🔧 2 Service users** - Store + Service access
 
-> **Note**: All users are created without passwords for security. Implement password authentication as needed for production.
+> **Note**: All users are created with secure passwords and proper bcrypt hashing.
 
 > **⚠️ IMPORTANT**: Do not modify or delete these test user accounts as they are permanently saved in the database and used by the system for role-based access control and testing purposes.
 
@@ -230,197 +165,126 @@ Before running the seed script, ensure your database is running:
 
 - ❌ Delete test user accounts
 - ❌ Modify user roles or permissions
-- ❌ Change email addresses
-- ❌ Remove user records from database
+- ❌ Change user passwords or email addresses
+- ❌ Use test accounts in production environments
 
-**What IS Safe to Do**:
+**What TO Do**:
 
-- ✅ Use test accounts for development
-- ✅ Test different user roles and permissions
-- ✅ Verify authentication flows
-- ✅ Test role-based access control
+- ✅ Use these accounts for development and testing
+- ✅ Test authentication flows and role-based access
+- ✅ Verify app functionality across different user roles
+- ✅ Use as reference for creating production user accounts
 
-**What NOT to Do**:
+## 🧪 **Testing**
+
+### **Unit Tests (Vitest)**
 
 ```bash
-# Start MySQL database (Docker)
-docker-compose up -d mysql
+# Run tests for specific app
+yarn workspace @artistry-hub/store test
+yarn workspace @artistry-hub/admin test
+yarn workspace @artistry-hub/artist test
+yarn workspace @artistry-hub/operator test
+yarn workspace @artistry-hub/social-worker test
+```
 
-# Update DATABASE_URL in .env.local to use port 3307
-DATABASE_URL="mysql://root:root@localhost:3307/art_commerce"
+### **E2E Tests (Playwright)**
 
-# Run migrations and seed
-yarn db:migrate
+```bash
+# Run E2E tests
+yarn test:e2e
+```
+
+## 🔒 **Security Features**
+
+### **Password Security**
+- **Strong Passwords**: All test users use secure passwords with uppercase, lowercase, numbers, and special characters
+- **bcrypt Hashing**: 12 salt rounds for secure password storage
+- **No Weak Passwords**: Eliminated common weak passwords that trigger security warnings
+
+### **Authentication Security**
+- **JWT Tokens**: Secure session management with NextAuth.js
+- **Role-Based Access**: Strict middleware enforcement of app access
+- **Session Validation**: Automatic re-authentication for sensitive operations
+
+### **Development Security**
+- **Test-Only Credentials**: Clear warnings about testing vs production usage
+- **Secure Seeding**: All seeding scripts include security documentation
+- **Audit Logging**: Comprehensive logging of user actions and system events
+
+## 📁 **Project Structure**
+
+```
+ArtistryHub/
+├── apps/                    # Next.js applications
+│   ├── store/              # Customer-facing e-commerce (3000)
+│   ├── admin/              # Admin panel (3001)
+│   ├── artist/             # Artist dashboard (3002)
+│   ├── operator/           # Operator panel (3003)
+│   ├── social-worker/      # Social worker portal (3004)
+│   └── bff/                # Backend for frontend API
+├── packages/                # Shared packages
+│   ├── auth/               # Authentication & authorization
+│   ├── db/                 # Database & Prisma schema
+│   ├── ui/                 # Shared UI components
+│   ├── config/             # Shared configuration
+│   ├── utils/              # Utility functions
+│   └── client-bff/         # BFF client utilities
+├── scripts/                 # Database seeding scripts
+└── docs/                    # Documentation
+```
+
+## 🚨 **Troubleshooting**
+
+### **Common Issues**
+
+1. **Customer Account Not Working**
+   - Ensure you're using the correct password: `Customer2024!Shop#`
+   - Run `yarn db:seed:readme` to refresh test users
+   - Check that the database is running and accessible
+
+2. **Authentication Errors**
+   - Verify NEXTAUTH_SECRET is set in .env.local
+   - Check database connection and Prisma client generation
+   - Ensure all apps are using the same auth configuration
+
+3. **Database Connection Issues**
+   - Verify DATABASE_URL in .env.local
+   - Run `yarn db:generate` to regenerate Prisma client
+   - Check that MySQL/PostgreSQL is running
+
+### **Reset & Recovery**
+
+```bash
+# Complete database reset
+yarn db:reset
+
+# Regenerate Prisma client
+yarn db:generate
+
+# Fresh seeding
 yarn db:seed
 ```
 
-## 🧪 Testing
+## 📚 **Additional Resources**
 
-### Unit Tests (Vitest)
+- [Authentication Guide](README-auth.md) - Detailed auth setup and configuration
+- [Migration Guide](migration.md) - Security refactor and migration details
+- [API Documentation](packages/api/README.md) - Event-driven API architecture
+- [UI Components](packages/ui/README.md) - Shared component library
 
-```bash
-# Run all tests
-yarn test
+## 🤝 **Contributing**
 
-# Run tests with UI
-yarn test:ui
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Commit your changes**: `git commit -m 'Add amazing feature'`
+4. **Push to the branch**: `git push origin feature/amazing-feature`
+5. **Open a Pull Request**
 
-# Run tests for specific app
-yarn workspace @artistry-hub/store test
-```
+## 📄 **License**
 
-### E2E Tests (Playwright)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```bash
-# Install Playwright browsers
-yarn dlx playwright install --with-deps
+---
 
-# Run E2E tests
-yarn workspace @artistry-hub/store test:e2e
-```
-
-## 📦 Package Management
-
-- **Yarn 4 (Berry)** with `nodeLinker: node-modules`
-- **Workspace dependencies** using `workspace:*` syntax
-- **Turborepo** for build orchestration and caching
-
-### Adding Dependencies
-
-```bash
-# Add to specific app/package
-yarn workspace @artistry-hub/store add react-hook-form
-
-# Add to root (dev dependencies)
-yarn add -D turbo
-
-# Add workspace dependency
-yarn workspace @artistry-hub/store add @artistry-hub/ui
-```
-
-## 🔧 Configuration
-
-### TypeScript
-
-- Base config in `packages/config/src/tsconfig/base.json`
-- Apps extend base config with app-specific paths
-
-### ESLint
-
-- Base config in `packages/config/src/eslint-config/`
-- Apps extend base config
-
-### Tailwind CSS
-
-- Base config in `packages/config/src/tailwind/base.js`
-- Apps extend with app-specific content paths
-
-## 🚀 Deployment
-
-Each app can be deployed independently:
-
-```bash
-# Build specific app
-yarn workspace @artistry-hub/store build
-
-# Start production server
-yarn workspace @artistry-hub/store start
-```
-
-## 🔧 **Recent Updates & Fixes**
-
-### **📝 Latest Commit: Enhanced User Management & Documentation**
-
-**Commit Message**: `feat: implement order/wishlist navbar hiding and create comprehensive test user accounts`
-
-**Changes Made**:
-
-- **Navbar Security**: Hidden Order & Wishlist links from public navigation for unauthenticated users
-- **Session-Based Access**: Implemented proper authentication checks for protected routes
-- **User Menu Integration**: Added Order & Wishlist links to authenticated user dropdown menus
-- **Test User Expansion**: Created 12 test users (2 of each role type) for comprehensive testing
-- **Database Seeding**: Updated seed script to generate multiple users per role
-- **Documentation**: Enhanced README with complete user credentials and role descriptions
-- **Security Notes**: Added warnings about preserving test user accounts
-
-**Files Modified**:
-
-- `apps/store/src/app/(components)/nav.config.ts` - Removed public Order/Wishlist links
-- `apps/store/src/app/(components)/NavbarClient.tsx` - Added user menu integration
-- `apps/store/src/components/navigation.tsx` - Updated navigation components
-- `apps/store/src/app/orders/page.tsx` - Created protected Orders page
-- `apps/store/src/app/wishlist/page.tsx` - Created protected Wishlist page
-- `packages/db/prisma/seed.ts` - Enhanced with 12 test users
-- `README.md` - Comprehensive documentation updates
-
-### **✅ Resolved Issues**
-
-- **Home Page Redirect**: Fixed import errors and implemented automatic redirect from `/` to `/store`
-- **Component Imports**: Corrected named vs default export mismatches
-- **Tailwind Colors**: Added missing primary color variants (100, 800)
-- **Navigation Links**: All apps now have consistent "Main Store" navigation
-- **Logout Redirects**: Unified logout behavior across all apps
-
-### **🚀 Current Features**
-
-- **Smart Routing**: Main page automatically redirects to store
-- **Role-Based Access**: Proper authentication and authorization
-- **Unified Experience**: Consistent navigation across all apps
-- **Store-First Design**: Store is the central hub for all users
-
-## 📚 Development Workflow
-
-1. **Feature Development**: Work in app-specific directories
-2. **Shared Logic**: Extract to appropriate packages
-3. **Testing**: Unit tests for packages, E2E for critical user flows
-4. **Linting**: ESLint + Prettier enforced via CI
-5. **Type Safety**: TypeScript strict mode across all packages
-
-## 🚨 **IMPORTANT NOTES**
-
-### **Environment Variables**
-
-> Make sure to set up proper environment variables in each app's `.env` file:
->
-> - `NEXTAUTH_SECRET` (required for authentication)
-> - `DATABASE_URL` (for database connection)
-> - `NEXTAUTH_URL` (app-specific URL)
-
-### **Database Setup**
-
-> Run database migrations and seed data before testing:
->
-> ```bash
-> yarn db:migrate
-> yarn db:seed
-> ```
-
-### **Port Management**
-
-> Each app runs on a specific port. Ensure ports are available:
->
-> - Store: 3000 (main app)
-> - Admin: 3001
-> - Artist: 3002
-> - Operator: 3003
-> - Social Worker: 3004
-
-## 🤝 Contributing
-
-1. Create feature branch from `develop`
-2. Make changes following the established patterns
-3. Add/update tests as needed
-4. Ensure all checks pass: `yarn lint && yarn typecheck && yarn test`
-5. Submit PR with clear description
-
-## 📄 License
-
-[Add your license here]
-
-## 🆘 Support
-
-For questions or issues:
-
-1. Check existing documentation
-2. Review package READMEs
-3. Open an issue with clear reproduction steps
+> **⚠️  SECURITY REMINDER**: All credentials in this README are for testing only. Never use these accounts in production environments.

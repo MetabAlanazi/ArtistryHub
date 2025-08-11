@@ -70,6 +70,21 @@ This app uses the shared `@artistry-hub/auth` package:
 - **Middleware**: `src/middleware.ts` enforces public access with auth for protected routes
 - **Session**: Uses NextAuth.js with JWT strategy
 
+## Test User Accounts
+
+For development and testing, use these pre-configured accounts:
+
+| Role | Email | Password | Access |
+|------|-------|----------|---------|
+| **Customer 1** | `customer1@example.com` | `Customer2024!Shop#` | Store only |
+| **Customer 2** | `customer2@example.com` | `Customer2024!Shop#` | Store only |
+| **Artist 1** | `artist1@artistryhub.com` | `Artist2024!Creative#` | Store + Artist |
+| **Artist 2** | `artist2@artistryhub.com` | `Artist2024!Creative#` | Store + Artist |
+| **Admin 1** | `admin@artistryhub.com` | `Admin2024!Secure#` | All apps |
+| **Admin 2** | `admin2@artistryhub.com` | `Admin2024!Secure#` | All apps |
+
+> ⚠️ **IMPORTANT**: These are test accounts only. Do not modify or use in production.
+
 ## Testing
 
 ### Unit Tests (Vitest)
@@ -83,46 +98,59 @@ This app uses the shared `@artistry-hub/auth` package:
 - Full user journey testing
 - Authentication flows
 - Shopping cart and checkout workflows
-- Wishlist management
 
-## Database
+## Security Features
 
-Uses the shared Prisma schema from `@artistry-hub/db`:
+- **Strong Passwords**: All test users use secure passwords
+- **bcrypt Hashing**: 12 salt rounds for password security
+- **Role-Based Access**: Strict middleware enforcement
+- **Session Management**: Secure JWT token handling
 
-- Singleton Prisma client
-- Shared User model with role-based access
-- Database scripts available at root level
+## Troubleshooting
 
-## Navigation
+### Common Issues
 
-**Important**: This app has its own unique navbar/branding and does NOT import navigation components from `@artistry-hub/ui`. All navigation is app-specific.
+1. **Customer Account Not Working**
+   - Use correct password: `Customer2024!Shop#`
+   - Run `yarn db:seed:readme` from root to refresh users
+   - Check database connection
 
-## Dependencies
+2. **Authentication Errors**
+   - Verify NEXTAUTH_SECRET in .env.local
+   - Ensure database is running and accessible
+   - Check Prisma client generation
 
-- **Shared**: `@artistry-hub/auth`, `@artistry-hub/ui`, `@artistry-hub/db`
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS (extends shared config)
-- **Testing**: Vitest, React Testing Library, Playwright
-- **Forms**: React Hook Form + Zod validation
-- **Payment**: Stripe integration
-
-## Build & Deploy
+### Reset & Recovery
 
 ```bash
-# Build the app
+# From project root
+yarn db:seed:readme  # Refresh test users
+yarn db:reset        # Complete database reset
+```
+
+## Architecture
+
+- **Next.js 14**: App Router with TypeScript
+- **Authentication**: NextAuth.js with shared auth package
+- **Database**: Prisma ORM with MySQL/PostgreSQL
+- **Styling**: Tailwind CSS with custom components
+- **State Management**: React hooks and context
+
+## Deployment
+
+```bash
+# Build for production
 yarn build
 
 # Start production server
 yarn start
 
-# Docker (if configured)
-docker build -t artistry-hub-store .
+# Environment variables required in production
+NEXTAUTH_SECRET
+DATABASE_URL
+NEXTAUTH_URL
 ```
 
-## Troubleshooting
+---
 
-1. **TypeScript errors**: Ensure `@artistry-hub/auth` and `@artistry-hub/db` are built
-2. **Database connection**: Verify DATABASE_URL and Prisma client generation
-3. **Authentication**: Check NextAuth configuration and session handling
-4. **Build issues**: Run `yarn db:generate` from root to ensure Prisma client is up to date
-5. **Payment issues**: Verify Stripe keys and webhook configuration
+> **🔒 Security Note**: All credentials in this README are for testing only. Never use these accounts in production environments.

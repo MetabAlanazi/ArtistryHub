@@ -1,23 +1,24 @@
 # Admin App
 
-Administrative dashboard for managing the ArtistryHub platform.
+Administrative dashboard for system management and user administration.
 
 ## Purpose & Scope
 
-The admin app provides a comprehensive interface for platform administrators to:
+The admin app provides comprehensive system administration capabilities:
 
-- Manage users and roles
-- Approve artist applications
-- Monitor system performance
-- Handle customer support requests
-- Manage platform-wide settings
+- User management and role assignment
+- System configuration and monitoring
+- Platform-wide analytics and reporting
+- Content moderation and approval workflows
+- System health and performance monitoring
 
 ## Unique Features
 
-- **Role-based Access Control**: ADMIN role required for all access
-- **Dashboard Analytics**: Real-time metrics and insights
-- **User Management**: Complete user lifecycle management
-- **System Monitoring**: Performance and health monitoring
+- **User Management**: Create, edit, and manage user accounts
+- **Role Administration**: Assign and modify user roles and permissions
+- **System Monitoring**: Real-time platform health and performance metrics
+- **Content Moderation**: Approve or reject user-generated content
+- **Analytics Dashboard**: Comprehensive platform usage statistics
 
 ## Local Development
 
@@ -34,7 +35,6 @@ yarn build
 # Run tests
 yarn test
 yarn test:ui
-yarn test:e2e
 
 # Type checking
 yarn typecheck
@@ -64,8 +64,25 @@ NEXT_PUBLIC_APP_NAME="ArtistryHub Admin"
 This app uses the shared `@artistry-hub/auth` package:
 
 - **Route**: `app/api/auth/[...nextauth]/route.ts` imports from `@artistry-hub/auth`
-- **Middleware**: `src/middleware.ts` enforces ADMIN-only access
+- **Middleware**: `src/middleware.ts` enforces admin-only access
 - **Session**: Uses NextAuth.js with JWT strategy
+
+## Test User Accounts
+
+For development and testing, use these pre-configured admin accounts:
+
+| Role | Email | Password | Access |
+|------|-------|----------|---------|
+| **Admin 1** | `admin@artistryhub.com` | `Admin2024!Secure#` | All apps |
+| **Admin 2** | `admin2@artistryhub.com` | `Admin2024!Secure#` | All apps |
+
+> ⚠️ **IMPORTANT**: These are test accounts only. Do not modify or use in production.
+
+## Access Control
+
+- **Admin Role Required**: Only users with `admin` role can access this application
+- **Middleware Protection**: Automatic redirect for non-admin users
+- **Session Validation**: Strict authentication checks on all routes
 
 ## Testing
 
@@ -75,48 +92,64 @@ This app uses the shared `@artistry-hub/auth` package:
 - Mocked Next.js router and NextAuth
 - Test setup in `src/test/setup.ts`
 
-### E2E Tests (Playwright)
+### Authentication Testing
 
-- Full user journey testing
-- Authentication flows
-- Role-based access control
+- Role-based access control verification
+- Session management testing
+- Middleware protection validation
 
-## Database
+## Security Features
 
-Uses the shared Prisma schema from `@artistry-hub/db`:
+- **Strong Passwords**: All test users use secure passwords
+- **bcrypt Hashing**: 12 salt rounds for password security
+- **Role-Based Access**: Strict admin-only middleware enforcement
+- **Session Management**: Secure JWT token handling
 
-- Singleton Prisma client
-- Shared User model with role-based access
-- Database scripts available at root level
+## Troubleshooting
 
-## Navigation
+### Common Issues
 
-**Important**: This app has its own unique navbar/branding and does NOT import navigation components from `@artistry-hub/ui`. All navigation is app-specific.
+1. **Access Denied**
+   - Ensure you're logged in with an admin account
+   - Use correct password: `Admin2024!Secure#`
+   - Run `yarn db:seed:readme` from root to refresh users
 
-## Dependencies
+2. **Authentication Errors**
+   - Verify NEXTAUTH_SECRET in .env.local
+   - Ensure database is running and accessible
+   - Check Prisma client generation
 
-- **Shared**: `@artistry-hub/auth`, `@artistry-hub/ui`, `@artistry-hub/db`
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS (extends shared config)
-- **Testing**: Vitest, React Testing Library, Playwright
-- **Forms**: React Hook Form + Zod validation
-
-## Build & Deploy
+### Reset & Recovery
 
 ```bash
-# Build the app
+# From project root
+yarn db:seed:readme  # Refresh test users
+yarn db:reset        # Complete database reset
+```
+
+## Architecture
+
+- **Next.js 14**: App Router with TypeScript
+- **Authentication**: NextAuth.js with shared auth package
+- **Database**: Prisma ORM with MySQL/PostgreSQL
+- **Styling**: Tailwind CSS with custom components
+- **State Management**: React hooks and context
+
+## Deployment
+
+```bash
+# Build for production
 yarn build
 
 # Start production server
 yarn start
 
-# Docker (if configured)
-docker build -t artistry-hub-admin .
+# Environment variables required in production
+NEXTAUTH_SECRET
+DATABASE_URL
+NEXTAUTH_URL
 ```
 
-## Troubleshooting
+---
 
-1. **TypeScript errors**: Ensure `@artistry-hub/auth` and `@artistry-hub/db` are built
-2. **Database connection**: Verify DATABASE_URL and Prisma client generation
-3. **Authentication**: Check NextAuth configuration and session handling
-4. **Build issues**: Run `yarn db:generate` from root to ensure Prisma client is up to date
+> **🔒 Security Note**: All credentials in this README are for testing only. Never use these accounts in production environments.

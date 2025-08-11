@@ -1,24 +1,24 @@
-# Artist App
+# Social Worker App
 
-Creative platform for artists to manage portfolios and handle commissions.
+Community outreach and support services portal for social workers.
 
 ## Purpose & Scope
 
-The artist app provides comprehensive tools for creative professionals:
+The social worker app provides comprehensive tools for community support professionals:
 
-- Portfolio management and artwork display
-- Commission request handling and pricing
-- Client communication and project management
-- Sales tracking and analytics
-- Profile customization and branding
+- Community outreach and engagement programs
+- Client case management and support tracking
+- Resource coordination and referral services
+- Program evaluation and impact measurement
+- Community needs assessment and reporting
 
 ## Unique Features
 
-- **Portfolio Management**: Upload, organize, and showcase artwork
-- **Commission System**: Handle custom artwork requests and pricing
-- **Client Communication**: Direct messaging with customers
-- **Sales Analytics**: Track performance and earnings
-- **Profile Customization**: Personalize artist profiles and branding
+- **Case Management**: Track client interactions and support needs
+- **Resource Directory**: Access and share community resources
+- **Program Coordination**: Manage outreach initiatives and events
+- **Impact Reporting**: Measure and report program effectiveness
+- **Community Engagement**: Facilitate connections and support networks
 
 ## Local Development
 
@@ -45,7 +45,7 @@ yarn lint
 
 ## Environment Variables
 
-Create a `.env.local` file in the `apps/artist` directory:
+Create a `.env.local` file in the `apps/social-worker` directory:
 
 ```env
 # Database
@@ -53,10 +53,10 @@ DATABASE_URL="mysql://user:password@localhost:3306/artistry_hub"
 
 # NextAuth
 NEXTAUTH_SECRET="your-secret-here"
-NEXTAUTH_URL="http://localhost:3002"
+NEXTAUTH_URL="http://localhost:3004"
 
 # App-specific
-NEXT_PUBLIC_APP_NAME="ArtistryHub Artist"
+NEXT_PUBLIC_APP_NAME="ArtistryHub Social Worker"
 ```
 
 ## Authentication Flow
@@ -64,17 +64,17 @@ NEXT_PUBLIC_APP_NAME="ArtistryHub Artist"
 This app uses the shared `@artistry-hub/auth` package:
 
 - **Route**: `app/api/auth/[...nextauth]/route.ts` imports from `@artistry-hub/auth`
-- **Middleware**: `src/middleware.ts` enforces artist-only access
+- **Middleware**: `src/middleware.ts` enforces social-worker-only access
 - **Session**: Uses NextAuth.js with JWT strategy
 
 ## Test User Accounts
 
-For development and testing, use these pre-configured artist accounts:
+For development and testing, use these pre-configured social worker accounts:
 
 | Role | Email | Password | Access |
 |------|-------|----------|---------|
-| **Artist 1** | `artist1@artistryhub.com` | `Artist2024!Creative#` | Store + Artist |
-| **Artist 2** | `artist2@artistryhub.com` | `Artist2024!Creative#` | Store + Artist |
+| **Social Worker 1** | `social1@artistryhub.com` | `Social2024!Help#` | Store + Social Worker |
+| **Social Worker 2** | `social2@artistryhub.com` | `Social2024!Help#` | Store + Social Worker |
 | **Admin 1** | `admin@artistryhub.com` | `Admin2024!Secure#` | All apps |
 | **Admin 2** | `admin2@artistryhub.com` | `Admin2024!Secure#` | All apps |
 
@@ -82,8 +82,8 @@ For development and testing, use these pre-configured artist accounts:
 
 ## Access Control
 
-- **Artist Role Required**: Only users with `artist` or `admin` role can access this application
-- **Middleware Protection**: Automatic redirect for non-artist users
+- **Social Worker Role Required**: Only users with `social_worker` or `admin` role can access this application
+- **Middleware Protection**: Automatic redirect for non-social-worker users
 - **Session Validation**: Strict authentication checks on all routes
 
 ## Testing
@@ -104,7 +104,7 @@ For development and testing, use these pre-configured artist accounts:
 
 - **Strong Passwords**: All test users use secure passwords
 - **bcrypt Hashing**: 12 salt rounds for password security
-- **Role-Based Access**: Strict artist/admin middleware enforcement
+- **Role-Based Access**: Strict social-worker/admin middleware enforcement
 - **Session Management**: Secure JWT token handling
 
 ## Troubleshooting
@@ -112,8 +112,8 @@ For development and testing, use these pre-configured artist accounts:
 ### Common Issues
 
 1. **Access Denied**
-   - Ensure you're logged in with an artist or admin account
-   - Use correct password: `Artist2024!Creative#`
+   - Ensure you're logged in with a social worker or admin account
+   - Use correct password: `Social2024!Help#`
    - Run `yarn db:seed:readme` from root to refresh users
 
 2. **Authentication Errors**
