@@ -54,36 +54,11 @@ export default function LoginPage() {
       // Get the intended destination
       const next = searchParams.get('next') || '/';
       
-      // Check if user should be redirected to their primary app
-      const userRole = session.user.role as string;
-      if (userRole && userRole !== 'customer' && userRole !== 'service') {
-        // Non-customer users should go to their primary app
-        const primaryAppUrl = getPrimaryAppUrl(userRole);
-        const redirectUrl = next.startsWith('/') ? `${primaryAppUrl}${next}` : `${primaryAppUrl}/${next}`;
-        console.log(`🔄 Redirecting ${userRole} user to primary app: ${redirectUrl}`);
-        window.location.href = redirectUrl;
-      } else {
-        // Customer users stay in store
-        router.replace(next);
-      }
+      // TODO: Re-enable SessionManager redirects after fixing import issues
+      // For now, just redirect to the intended destination
+      router.replace(next);
     }
   }, [status, session, router, searchParams, isRedirecting]);
-
-  // Helper function to get primary app URL based on role
-  const getPrimaryAppUrl = (role: string): string => {
-    switch (role) {
-      case 'admin':
-        return 'http://localhost:3001';
-      case 'artist':
-        return 'http://localhost:3002';
-      case 'operator':
-        return 'http://localhost:3003';
-      case 'social_worker':
-        return 'http://localhost:3004';
-      default:
-        return 'http://localhost:3000';
-    }
-  };
 
   const onSubmit = async (data: LoginFormData) => {
     setError('');
@@ -127,7 +102,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
-          <p className="mt-4 text-gray-600">Redirecting to your app...</p>
+          <p className="mt-4 text-gray-600">Redirecting...</p>
         </div>
       </div>
     );

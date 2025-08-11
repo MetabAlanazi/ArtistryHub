@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import { SessionManager } from '@artistry-hub/auth'
+// import { SessionManager } from '@artistry-hub/auth'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -24,26 +24,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
   
+  // TODO: Re-enable SessionManager after fixing import issues
   // If authenticated, check role-based access and redirects
   if (token && token.role) {
     const userRole = token.role as string
     
-    // Check if user should be redirected to their primary app
-    const redirectCheck = SessionManager.shouldRedirect(userRole, 'operator')
-    
-    if (redirectCheck.shouldRedirect && redirectCheck.redirectUrl) {
-      console.log(`🔄 Redirecting ${userRole} user from operator app to primary app: ${redirectCheck.redirectUrl}`)
-      
-      // Add the current path as a callback URL
-      const redirectUrl = redirectCheck.redirectUrl + pathname
-      return NextResponse.redirect(new URL(redirectUrl))
-    }
-    
-    // If user is in operator app but doesn't have operator or admin role, redirect to their primary app
+    // Basic role check - only operator and admin users can access operator app
     if (!['operator', 'admin'].includes(userRole)) {
-      const primaryAppUrl = SessionManager.getPrimaryAppUrl(userRole)
-      console.log(`🚫 ${userRole} user accessing operator app, redirecting to: ${primaryAppUrl}`)
-      return NextResponse.redirect(new URL(primaryAppUrl))
+      // Redirect non-operator users to store (temporary solution)
+      console.log(`🚫 ${userRole} user accessing operator app, redirecting to store`)
+      return NextResponse.redirect(new URL('http://localhost:3000'))
     }
     
     // If authenticated and trying to access login page, redirect to dashboard
