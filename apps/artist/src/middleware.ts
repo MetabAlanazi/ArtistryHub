@@ -29,20 +29,20 @@ export async function middleware(request: NextRequest) {
     const userRole = token.role as string
     
     // Check if user should be redirected to their primary app
-    const redirectCheck = SessionManager.shouldRedirect(userRole, 'admin')
+    const redirectCheck = SessionManager.shouldRedirect(userRole, 'artist')
     
     if (redirectCheck.shouldRedirect && redirectCheck.redirectUrl) {
-      console.log(`🔄 Redirecting ${userRole} user from admin app to primary app: ${redirectCheck.redirectUrl}`)
+      console.log(`🔄 Redirecting ${userRole} user from artist app to primary app: ${redirectCheck.redirectUrl}`)
       
       // Add the current path as a callback URL
       const redirectUrl = redirectCheck.redirectUrl + pathname
       return NextResponse.redirect(new URL(redirectUrl))
     }
     
-    // If user is in admin app but doesn't have admin role, redirect to their primary app
-    if (userRole !== 'admin') {
+    // If user is in artist app but doesn't have artist or admin role, redirect to their primary app
+    if (!['artist', 'admin'].includes(userRole)) {
       const primaryAppUrl = SessionManager.getPrimaryAppUrl(userRole)
-      console.log(`🚫 ${userRole} user accessing admin app, redirecting to: ${primaryAppUrl}`)
+      console.log(`🚫 ${userRole} user accessing artist app, redirecting to: ${primaryAppUrl}`)
       return NextResponse.redirect(new URL(primaryAppUrl))
     }
     

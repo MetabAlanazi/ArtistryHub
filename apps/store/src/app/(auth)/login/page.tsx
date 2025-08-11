@@ -7,10 +7,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@artistry-hub/ui';
+import { Input } from '@artistry-hub/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@artistry-hub/ui';
+import { Alert, AlertDescription } from '@artistry-hub/ui';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -50,10 +50,40 @@ export default function LoginPage() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user && !isRedirecting) {
       setIsRedirecting(true);
+      
+      // Get the intended destination
       const next = searchParams.get('next') || '/';
-      router.replace(next);
+      
+      // Check if user should be redirected to their primary app
+      const userRole = session.user.role as string;
+      if (userRole && userRole !== 'customer' && userRole !== 'service') {
+        // Non-customer users should go to their primary app
+        const primaryAppUrl = getPrimaryAppUrl(userRole);
+        const redirectUrl = next.startsWith('/') ? `${primaryAppUrl}${next}` : `${primaryAppUrl}/${next}`;
+        console.log(`🔄 Redirecting ${userRole} user to primary app: ${redirectUrl}`);
+        window.location.href = redirectUrl;
+      } else {
+        // Customer users stay in store
+        router.replace(next);
+      }
     }
   }, [status, session, router, searchParams, isRedirecting]);
+
+  // Helper function to get primary app URL based on role
+  const getPrimaryAppUrl = (role: string): string => {
+    switch (role) {
+      case 'admin':
+        return 'http://localhost:3001';
+      case 'artist':
+        return 'http://localhost:3002';
+      case 'operator':
+        return 'http://localhost:3003';
+      case 'social_worker':
+        return 'http://localhost:3004';
+      default:
+        return 'http://localhost:3000';
+    }
+  };
 
   const onSubmit = async (data: LoginFormData) => {
     setError('');
@@ -70,11 +100,7 @@ export default function LoginPage() {
         setError(result.error);
       } else if (result?.ok) {
         setMessage('Sign in successful! Redirecting...');
-        // Immediate redirect for better UX
-        const next = searchParams.get('next') || '/';
-        setTimeout(() => {
-          router.replace(next);
-        }, 100);
+        // The redirect will be handled by the useEffect above
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -101,7 +127,7 @@ export default function LoginPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
-          <p className="mt-4 text-gray-600">Redirecting...</p>
+          <p className="mt-4 text-gray-600">Redirecting to your app...</p>
         </div>
       </div>
     );

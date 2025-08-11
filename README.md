@@ -198,16 +198,19 @@ yarn test:e2e
 ## 🔒 **Security Features**
 
 ### **Password Security**
+
 - **Strong Passwords**: All test users use secure passwords with uppercase, lowercase, numbers, and special characters
 - **bcrypt Hashing**: 12 salt rounds for secure password storage
 - **No Weak Passwords**: Eliminated common weak passwords that trigger security warnings
 
 ### **Authentication Security**
+
 - **JWT Tokens**: Secure session management with NextAuth.js
 - **Role-Based Access**: Strict middleware enforcement of app access
 - **Session Validation**: Automatic re-authentication for sensitive operations
 
 ### **Development Security**
+
 - **Test-Only Credentials**: Clear warnings about testing vs production usage
 - **Secure Seeding**: All seeding scripts include security documentation
 - **Audit Logging**: Comprehensive logging of user actions and system events
@@ -287,4 +290,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-> **⚠️  SECURITY REMINDER**: All credentials in this README are for testing only. Never use these accounts in production environments.
+> **⚠️ SECURITY REMINDER**: All credentials in this README are for testing only. Never use these accounts in production environments.

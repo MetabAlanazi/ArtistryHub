@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { SessionManager } from '@artistry-hub/auth';
 
 // Public paths that don't require authentication
 const publicPaths = [
@@ -13,6 +14,9 @@ const publicPaths = [
   '/api/test-user',
   '/api/test-db',
   '/api/placeholder',
+  '/store',
+  '/products',
+  '/categories',
 ];
 
 // Protected paths that require authentication
@@ -22,13 +26,6 @@ const protectedPaths = [
   '/profile',
   '/checkout',
 ];
-
-// Role-based protected paths
-const roleProtectedPaths = {
-  '/admin': ['admin'],
-  '/operator': ['operator'],
-  '/artist': ['artist'],
-};
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -47,11 +44,6 @@ export async function middleware(request: NextRequest) {
   const isPublicPath = publicPaths.some(path => pathname === path);
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
   
-  // Check if path requires specific role
-  const requiredRole = Object.entries(roleProtectedPaths).find(([path]) => 
-    pathname.startsWith(path)
-  )?.[1];
-
   // Get the token from the request
   const token = await getToken({ 
     req: request, 
@@ -60,7 +52,7 @@ export async function middleware(request: NextRequest) {
 
   // If no token and trying to access protected path, redirect to login
   if (!token) {
-    if (isProtectedPath || requiredRole) {
+    if (isProtectedPath) {
       const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname)}`, request.url);
       return NextResponse.redirect(loginUrl);
     }
@@ -68,24 +60,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If has token, check role boundaries for role-protected paths
-  if (requiredRole && token.role) {
+  // If user is authenticated, check if they should be redirected to their primary app
+  if (token.role) {
     const userRole = token.role as string;
-    if (!requiredRole.includes(userRole)) {
-      // User doesn't have required role, redirect to appropriate app or show error
-      console.log(`Role access denied: ${userRole} trying to access ${pathname}`);
+    const redirectCheck = SessionManager.shouldRedirect(userRole, 'store');
+    
+    if (redirectCheck.shouldRedirect && redirectCheck.redirectUrl) {
+      console.log(`🔄 Redirecting ${userRole} user to primary app: ${redirectCheck.redirectUrl}`);
       
-      if (userRole === 'admin') {
-        return NextResponse.redirect(new URL('http://localhost:3001', request.url));
-      } else if (userRole === 'artist') {
-        return NextResponse.redirect(new URL('http://localhost:3002', request.url));
-      } else if (userRole === 'operator') {
-        return NextResponse.redirect(new URL('http://localhost:3003', request.url));
-      } else {
-        // For other roles, redirect to login
-        const loginUrl = new URL(`/login?next=${encodeURIComponent(pathname)}`, request.url);
-        return NextResponse.redirect(loginUrl);
+      // Add the current path as a callback URL if it's a protected path
+      let redirectUrl = redirectCheck.redirectUrl;
+      if (isProtectedPath) {
+        redirectUrl += pathname;
       }
+      
+      return NextResponse.redirect(new URL(redirectUrl));
     }
   }
 
