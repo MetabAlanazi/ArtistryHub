@@ -1,3 +1,52 @@
+/**
+ * AUTHENTICATION-SPECIFIC SEEDING SCRIPT - ArtistryHub
+ * 
+ * ⚠️  IMPORTANT: TESTING ONLY - DO NOT MODIFY USER NAMES OR PASSWORDS
+ * 
+ * PURPOSE:
+ * This script creates test users specifically for testing authentication flows
+ * and NextAuth integration. It focuses on core authentication functionality
+ * without additional business logic data.
+ * 
+ * SECURITY NOTES:
+ * - All passwords are securely hashed using bcrypt with 12 salt rounds
+ * - These are TEST accounts only - NEVER use in production
+ * - User names and passwords are standardized and should not be changed
+ * - Every run uses upsert to avoid duplicates
+ * 
+ * CREATED USERS:
+ * - Admin: Full platform access for system administration
+ * - Operator: Order fulfillment and inventory management access
+ * - Artist: Creative platform access for portfolio management
+ * - Customer: E-commerce store access for shopping
+ * - Service: Support and technical assistance access
+ * 
+ * AUTHENTICATION TESTING:
+ * - Login/logout flows
+ * - Session management
+ * - Role-based access control
+ * - Password verification
+ * - Email verification status
+ * - Service token authentication
+ * 
+ * USAGE:
+ * - Run with: yarn seed:auth
+ * - Use this for testing authentication and authorization flows
+ * - Perfect for testing login, session management, and role-based access
+ * 
+ * DATABASE REQUIREMENTS:
+ * - Prisma client must be generated
+ * - Database must be running and accessible
+ * - User table must exist with proper schema
+ * 
+ * DEPENDENCIES:
+ * - @prisma/client: Database ORM
+ * - bcryptjs: Password hashing for security
+ * 
+ * ⚠️  WARNING: These credentials are for testing only.
+ * ⚠️  Do not modify or update them.
+ */
+
 import { PrismaClient, Role } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
@@ -34,7 +83,7 @@ async function main() {
   console.log('🌱 Seeding authentication users...')
 
   // Create admin user
-  const adminPassword = await hashPassword('Admin123!')
+  const adminPassword = await hashPassword('Admin2024!Secure#')
   const admin = await prisma.user.upsert({
     where: { email: 'admin@artistryhub.com' },
     update: {},
@@ -49,7 +98,7 @@ async function main() {
   })
 
   // Create operator user
-  const operatorPassword = await hashPassword('Ops123!')
+  const operatorPassword = await hashPassword('Operator2024!Work#')
   const operator = await prisma.user.upsert({
     where: { email: 'ops@artistryhub.com' },
     update: {},
@@ -64,7 +113,7 @@ async function main() {
   })
 
   // Create artist user
-  const artistPassword = await hashPassword('Artist123!')
+  const artistPassword = await hashPassword('Artist2024!Creative#')
   const artist = await prisma.user.upsert({
     where: { email: 'artist@artistryhub.com' },
     update: {},
@@ -78,8 +127,8 @@ async function main() {
     },
   })
 
-  // Create customer user
-  const customerPassword = await hashPassword('Customer123!')
+  // Create customer user - RECREATED EVERY TIME (deleted and reinserted)
+  const customerPassword = await hashPassword('Customer2024!Shop#')
   const customer = await prisma.user.upsert({
     where: { email: 'customer@artistryhub.com' },
     update: {},
@@ -201,10 +250,10 @@ async function main() {
   console.log(`   Service: ${serviceUser.id}`)
   console.log('')
   console.log('🔐 Login Credentials:')
-  console.log('   Admin: admin@artistryhub.com / Admin123!')
-  console.log('   Operator: ops@artistryhub.com / Ops123!')
-  console.log('   Artist: artist@artistryhub.com / Artist123!')
-  console.log('   Customer: customer@artistryhub.com / Customer123!')
+  console.log('   Admin: admin@artistryhub.com / Admin2024!Secure#')
+  console.log('   Operator: ops@artistryhub.com / Operator2024!Work#')
+  console.log('   Artist: artist@artistryhub.com / Artist2024!Creative#')
+  console.log('   Customer: customer@artistryhub.com / Customer2024!Shop#')
   console.log('')
   console.log('🔑 Service Token (Social Worker):')
   console.log(`   Token: ${token}`)

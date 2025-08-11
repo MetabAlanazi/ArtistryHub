@@ -1,13 +1,40 @@
-// Re-export NextAuth types and utilities
-export type { NextAuthOptions, Session, User } from 'next-auth';
-export type { JWT } from 'next-auth/jwt';
-export { getServerSession } from 'next-auth';
+// Core auth exports
+export { baseAuthOptions, loginSchema, registerSchema, hashPassword, verifyPassword } from './authOptions'
+export type { UserRole, AuthUser } from './types'
 
-// Export our custom types and utilities
-export type { UserRole, AuthUser } from './types';
-export { getCurrentUser, getServerSessionStrict, hasRole, requireRole } from './helpers';
-export { createAuthMiddleware, adminMiddleware, artistMiddleware, operatorMiddleware, customerMiddleware } from './middleware';
-export { baseAuthOptions, loginSchema, registerSchema, hashPassword, verifyPassword } from './authOptions';
+// Helper functions
+export { 
+  getServerSessionStrict, 
+  getServerSessionForAPI,
+  requireRole, 
+  withRole, 
+  requireRecentAuth,
+  isAuthenticated,
+  getUserRole,
+  getCurrentUser
+} from './helpers'
 
-// Export bcrypt utilities
-export { hash, compare } from 'bcryptjs';
+// Middleware
+export { 
+  authMiddlewareFactory,
+  adminMiddleware,
+  artistMiddleware,
+  operatorMiddleware,
+  storeMiddleware,
+  socialWorkerMiddleware
+} from './middleware'
+
+// Two-factor authentication
+export { 
+  TwoFactorService,
+  requireTwoFactor,
+  handleReAuth,
+  requireRecentReAuth,
+  isReAuthRequired
+} from './twoFactor'
+
+// Types
+export type { TwoFactorSetup, TwoFactorVerify } from './twoFactor'
+
+// Note: Redis limiter exports are only available server-side
+// Import them directly from './limiter' when needed in server code

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { setEnabled, isEnabled, readWindow } from '@artistryhub/utils';
-import type { AppName } from '@artistryhub/utils';
-import { getCurrentUser } from '@artistryhub/auth';
+import { setEnabled, isEnabled, readWindow } from '@artistry-hub/utils';
+import type { AppName } from '@artistry-hub/utils';
+import { getCurrentUser } from '@artistry-hub/auth';
 
 const APPS: AppName[] = ['store', 'admin', 'artist', 'operator', 'social-worker'].filter(Boolean) as AppName[];
 

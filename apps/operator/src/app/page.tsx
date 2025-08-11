@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { OperatorDashboard } from '@/components/operator-dashboard'
+import OperatorDashboard from '@/components/operator-dashboard'
 import { getCurrentUser } from '@/lib/auth'
 
 export default async function OperatorHomePage() {

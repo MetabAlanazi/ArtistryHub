@@ -1,86 +1,85 @@
-import { NextAuthOptions, getServerSession } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from '@artistry-hub/db'
-import { verifyPassword, baseAuthOptions } from '@artistry-hub/auth'
-import { checkRateLimit } from './rate-limit'
-import './types'
+// Re-export all auth utilities from the centralized auth package
+export * from '@artistry-hub/auth'
 
-// Extend the base auth options with app-specific configuration
+// App-specific auth options extending the base
+import { baseAuthOptions } from '@artistry-hub/auth'
+import { NextAuthOptions } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
+
+const prisma = new PrismaClient()
+
 export const authOptions: NextAuthOptions = {
   ...baseAuthOptions,
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
         try {
-          if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials')
-            return null
-          }
-
-          // Rate limiting check (basic in-memory for development)
-          const identifier = `auth:${credentials.email}`
-          if (!checkRateLimit(identifier, 5, 15 * 60 * 1000)) {
-            console.log('Rate limit exceeded for:', credentials.email)
-            return null
-          }
-
+          // Find user by email
           const user = await prisma.user.findUnique({
             where: { email: credentials.email }
           })
 
           if (!user || !user.hashedPassword) {
-            console.log('User not found or no password hash')
             return null
           }
 
-          // Check if user is active
-          if (user.status !== 'ACTIVE') {
-            console.log('User account is not active:', user.email)
-            return null
-          }
-
-          let isValid = false
-          try {
-            isValid = await verifyPassword(credentials.password, user.hashedPassword)
-          } catch (error) {
-            console.error('Password verification error:', error)
-            return null
-          }
+          // Verify password
+          const isValidPassword = await bcrypt.compare(credentials.password, user.hashedPassword)
           
-          if (!isValid) {
-            console.log('Invalid password for user:', user.email)
+          if (!isValidPassword) {
             return null
           }
 
-          console.log('Authentication successful for user:', user.email)
-          const userObject = {
+          // Return user object for NextAuth
+          return {
             id: user.id,
             email: user.email,
-            name: user.name || undefined,
+            name: user.name,
             role: user.role,
             status: user.status
           }
-          console.log('Returning user object:', userObject)
-          return userObject
         } catch (error) {
-          console.error('Authorization error:', error)
+          console.error('Authentication error:', error)
           return null
         }
       }
     })
   ],
+  callbacks: {
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.sub as string;
+        session.user.role = token.role as string;
+        session.user.status = token.status as string;
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.status = user.status;
+      }
+      return token;
+    }
+  },
   pages: {
     signIn: '/login',
     error: '/login',
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: `store-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
@@ -89,35 +88,5 @@ export const authOptions: NextAuthOptions = {
         maxAge: 30 * 24 * 60 * 60 // 30 days
       }
     }
-  },
-  debug: process.env.NODE_ENV === 'development'
-}
-
-export async function getServerSessionStrict() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) {
-    throw new Error('Unauthorized: No valid session')
   }
-  return session
-}
-
-export async function getCurrentUser() {
-  const session = await getServerSession(authOptions)
-  return session?.user || null
-}
-
-export function requireAuth<T extends (...args: any[]) => any>(
-  handler: T
-): T {
-  return (async (...args: Parameters<T>) => {
-    try {
-      await getServerSessionStrict()
-      return handler(...args)
-    } catch (error) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      )
-    }
-  }) as T
 }

@@ -1,50 +1,40 @@
-import { NextResponse } from 'next/server'
-import { PrismaClient } from '@artistry-hub/db'
-
-const prisma = new PrismaClient()
+import { NextResponse } from 'next/server';
+import { getCurrentUser } from '@artistry-hub/auth';
+import { bffEndpoints } from '@artistry-hub/client-bff';
 
 export async function GET() {
   try {
-    const [
-      totalOrders,
-      totalProducts,
-      totalUsers,
-      totalRevenue,
-      recentOrders,
-      topProducts
-    ] = await Promise.all([
-      prisma.order.count(),
-      prisma.product.count(),
-      prisma.user.count(),
-      prisma.payment.aggregate({
-        where: { status: 'COMPLETED' },
-        _sum: { amountCents: true }
-      }),
-      prisma.order.findMany({
-        take: 5,
-        orderBy: { placedAt: 'desc' },
-        include: { payments: true, items: true }
-      }),
-      prisma.product.findMany({
-        take: 5,
-        where: { status: 'PUBLISHED' },
-        orderBy: { updatedAt: 'desc' }
-      })
-    ])
+    // Ensure only admins can access this endpoint
+    const user = await getCurrentUser();
+
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Access denied. Admin role required.' },
+        { status: 403 }
+      );
+    }
+
+    // Call BFF instead of direct Prisma
+    const response = await bffEndpoints.admin.getStats();
+    
+    if (!response.success) {
+      return NextResponse.json(
+        { error: response.error || 'Failed to fetch stats' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
-      totalOrders,
-      totalProducts,
-      totalUsers,
-      totalRevenue: totalRevenue._sum.amountCents || 0,
-      recentOrders,
-      topProducts
-    })
+      success: true,
+      stats: response.data || {}
+    });
+
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error)
+    console.error('Error fetching dashboard stats:', error);
+
     return NextResponse.json(
-      { error: 'Failed to fetch dashboard stats' },
+      { error: 'Internal server error' },
       { status: 500 }
-    )
+    );
   }
 }

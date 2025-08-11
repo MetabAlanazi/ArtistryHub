@@ -85,32 +85,8 @@ export default function StorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">🏪 ArtistryHub Store</h1>
-              <p className="mt-2 text-gray-600">Discover unique art pieces from talented artists</p>
-            </div>
-            {session && (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">
-                  Welcome, {session.user?.name || session.user?.email}
-                </span>
-                <Link
-                  href="/profile"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-                >
-                  Profile
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
+    <main className="mx-auto max-w-7xl px-4 py-6">
+      <div className="min-h-screen bg-gray-50">
       {/* Category Filter */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -129,6 +105,14 @@ export default function StorePage() {
               </button>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Store Title and Description */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">🏪 ArtistryHub Store</h1>
+          <p className="mt-2 text-gray-600">Discover unique art pieces from talented artists</p>
         </div>
       </div>
 
@@ -199,5 +183,6 @@ export default function StorePage() {
         </div>
       </div>
     </div>
+    </main>
   );
 }

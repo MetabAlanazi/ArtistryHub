@@ -1,51 +1,40 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser, requireAdmin } from '../../../../lib/auth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { getCurrentUser } from '@artistry-hub/auth';
+import { bffEndpoints } from '@artistry-hub/client-bff';
 
 export async function GET() {
   try {
     // Ensure only admins can access this endpoint
-    const user = await requireAdmin();
-    
-    // Fetch all users with necessary fields
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        targetAppUrl: true,
-        updatedAt: true,
-        mustReauthAt: true,
-        status: true,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-    });
-    
-    return NextResponse.json({
-      success: true,
-      users,
-    });
-    
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    
-    if (error instanceof Error && error.message.includes('Access denied')) {
+    const user = await getCurrentUser();
+
+    if (!user || user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Access denied. Admin role required.' },
         { status: 403 }
       );
     }
+
+    // Call BFF instead of direct Prisma
+    const response = await bffEndpoints.admin.getUsers();
     
+    if (!response.success) {
+      return NextResponse.json(
+        { error: response.error || 'Failed to fetch users' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      users: response.data?.users || [],
+    });
+
+  } catch (error) {
+    console.error('Error fetching users:', error);
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

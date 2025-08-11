@@ -1,185 +1,102 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { PrismaClient } from '@artistry-hub/db'
-import { formatSAR } from '@artistry-hub/utils'
-import { 
-  Package, 
-  Truck, 
-  MessageSquare,
-  Clock,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@artistry-hub/ui'
+import { bffEndpoints } from '@artistry-hub/client-bff'
+import type { OrderSchema } from '@artistry-hub/client-bff'
 
-const prisma = new PrismaClient()
+export default function OperatorDashboard() {
+  const [orders, setOrders] = useState<OrderSchema[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-async function getOperatorDashboard() {
-  const [
-    pendingOrders,
-    inProgressFulfillments,
-    openTickets,
-    urgentTickets
-  ] = await Promise.all([
-    prisma.order.count({
-      where: { status: 'PAID' }
-    }),
-    prisma.fulfillment.count({
-      where: { 
-        status: { in: ['ALLOCATED', 'PACKED'] }
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true)
+        // Call BFF instead of direct Prisma
+        const response = await bffEndpoints.orders.getAll()
+        
+        if (response.success && response.data?.orders) {
+          setOrders(response.data.orders)
+        } else {
+          setError(response.error || 'Failed to fetch orders')
+        }
+      } catch (err) {
+        setError('Failed to fetch orders')
+        console.error('Error fetching orders:', err)
+      } finally {
+        setLoading(false)
       }
-    }),
-    prisma.supportTicket.count({
-      where: { status: 'OPEN' }
-    }),
-    prisma.supportTicket.count({
-      where: { 
-        status: 'OPEN',
-        priority: { in: ['HIGH', 'CRITICAL'] }
-      }
-    })
-  ])
+    }
 
-  return {
-    pendingOrders,
-    inProgressFulfillments,
-    openTickets,
-    urgentTickets
-  }
-}
+    fetchOrders()
+  }, [])
 
-export function OperatorDashboard() {
-  const { data: stats, isLoading, error } = useQuery({
-    queryKey: ['operator-dashboard'],
-    queryFn: getOperatorDashboard,
-  })
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="card p-6 animate-pulse">
-            <div className="h-4 bg-gray-200 rounded mb-2"></div>
-            <div className="h-8 bg-gray-200 rounded"></div>
-          </div>
-        ))}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Pending Orders</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-4">Loading...</div>
+        </CardContent>
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <div className="text-center text-red-600">
-        Failed to load dashboard
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Pending Orders</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-4 text-red-500">{error}</div>
+        </CardContent>
+      </Card>
     )
   }
 
-  const statCards = [
-    {
-      title: 'Pending Orders',
-      value: stats?.pendingOrders || 0,
-      icon: Package,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
-    },
-    {
-      title: 'In Progress Fulfillment',
-      value: stats?.inProgressFulfillments || 0,
-      icon: Truck,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100',
-    },
-    {
-      title: 'Open Support Tickets',
-      value: stats?.openTickets || 0,
-      icon: MessageSquare,
-      color: 'text-red-600',
-      bgColor: 'bg-red-100',
-    },
-    {
-      title: 'Urgent Tickets',
-      value: stats?.urgentTickets || 0,
-      icon: AlertCircle,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
-    },
-  ]
-
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat) => (
-          <div key={stat.title} className="card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+    <Card>
+      <CardHeader>
+        <CardTitle>Pending Orders</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {orders.length === 0 ? (
+          <div className="text-center py-4 text-gray-500">No pending orders</div>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">Order #{order.id.slice(0, 8)}</p>
+                  <p className="text-sm text-gray-600">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">
+                    ${(order.totalCents / 100).toFixed(2)}
+                  </p>
+                  <p className="text-sm text-gray-600 capitalize">{order.status}</p>
+                  <div className="flex space-x-2 mt-2">
+                    <button className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                      Process
+                    </button>
+                    <button className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">
+                      Ship
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                <stat.icon className={`w-6 h-6 ${stat.color}`} />
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-          <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-3 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
-              <div className="flex items-center">
-                <Package className="w-5 h-5 text-primary-600 mr-3" />
-                <span className="text-sm font-medium">Process Orders</span>
-              </div>
-              <span className="text-xs text-primary-600">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center">
-                <Truck className="w-5 h-5 text-gray-600 mr-3" />
-                <span className="text-sm font-medium">Manage Fulfillment</span>
-              </div>
-              <span className="text-xs text-gray-600">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center">
-                <MessageSquare className="w-5 h-5 text-gray-600 mr-3" />
-                <span className="text-sm font-medium">Support Tickets</span>
-              </div>
-              <span className="text-xs text-gray-600">→</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <div>
-                <p className="text-sm font-medium">Order shipped</p>
-                <p className="text-xs text-gray-500">Order #12345678</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <Clock className="w-5 h-5 text-yellow-600" />
-              <div>
-                <p className="text-sm font-medium">Order allocated</p>
-                <p className="text-xs text-gray-500">Order #12345679</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <div>
-                <p className="text-sm font-medium">Urgent ticket opened</p>
-                <p className="text-xs text-gray-500">Missing item in order</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 

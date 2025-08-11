@@ -1,111 +1,76 @@
-import { NextAuthOptions, getServerSession } from 'next-auth'
+// Re-export all auth utilities from the centralized auth package
+export * from '@artistry-hub/auth'
+
+// App-specific auth options extending the base
+import { baseAuthOptions } from '@artistry-hub/auth'
+import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from '@artistry-hub/db'
+import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import './types'
+
+const prisma = new PrismaClient()
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || "dev-secret-change-in-production",
+  ...baseAuthOptions,
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials')
-            return null
-          }
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
 
+        try {
+          // Find user by email
           const user = await prisma.user.findUnique({
             where: { email: credentials.email }
           })
 
           if (!user || !user.hashedPassword) {
-            console.log('User not found or no password hash')
             return null
           }
 
-          // Check if user is active and has operator role
-          if (user.status !== 'ACTIVE' || user.role !== 'operator') {
-            console.log('User not authorized for operator access:', user.email)
-            return null
-          }
-
-          let isValid = false
-          try {
-            isValid = await bcrypt.compare(credentials.password, user.hashedPassword)
-          } catch (error) {
-            console.error('Bcrypt verification error:', error)
-            return null
-          }
+          // Verify password
+          const isValidPassword = await bcrypt.compare(credentials.password, user.hashedPassword)
           
-          if (!isValid) {
-            console.log('Invalid password for user:', user.email)
+          if (!isValidPassword) {
             return null
           }
 
-          console.log('Operator authentication successful for user:', user.email)
-          const userObject = {
+          // Return user object for NextAuth
+          return {
             id: user.id,
             email: user.email,
-            name: user.name || undefined,
+            name: user.name,
             role: user.role,
             status: user.status
           }
-          console.log('Returning operator user object:', userObject)
-          return userObject
         } catch (error) {
-          console.error('Authorization error:', error)
+          console.error('Authentication error:', error)
           return null
         }
       }
     })
   ],
-  session: {
-    strategy: 'jwt' as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user && typeof user === 'object') {
-        const userRole = user.role || (user as any).role
-        const userStatus = user.status || (user as any).status
-        
-        if (userRole && typeof userRole === 'string') {
-          (token as any).role = userRole
-          console.log('JWT token updated with role:', userRole)
-        }
-        if (userStatus && typeof userStatus === 'string') {
-          (token as any).status = userStatus
-          console.log('JWT token updated with status:', userStatus)
-        }
-      }
-      return token
-    },
     async session({ session, token }) {
-      if (token && session.user) {
-        (session.user as any).id = token.sub as string
-        if ((token as any).role) {
-          (session.user as any).role = (token as any).role
-        }
-        if ((token as any).status) {
-          (session.user as any).status = (token as any).status
-        }
-        
-        console.log('Operator session created for user:', {
-          id: (session.user as any).id,
-          email: session.user.email,
-          role: (session.user as any).role
-        })
+      if (token) {
+        session.user.id = token.sub as string;
+        session.user.role = token.role as string;
+        session.user.status = token.status as string;
       }
-      return session
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.status = user.status;
+      }
+      return token;
     }
   },
   pages: {
@@ -114,7 +79,7 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: `operator-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
@@ -123,35 +88,5 @@ export const authOptions: NextAuthOptions = {
         maxAge: 30 * 24 * 60 * 60 // 30 days
       }
     }
-  },
-  debug: process.env.NODE_ENV === 'development'
-}
-
-export async function getServerSessionStrict() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) {
-    throw new Error('Unauthorized: No valid session')
   }
-  return session
-}
-
-export async function getCurrentUser() {
-  const session = await getServerSession(authOptions)
-  return session?.user || null
-}
-
-export function requireAuth<T extends (...args: any[]) => any>(
-  handler: T
-): T {
-  return (async (...args: Parameters<T>) => {
-    try {
-      await getServerSessionStrict()
-      return handler(...args)
-    } catch (error) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      )
-    }
-  }) as T
 }

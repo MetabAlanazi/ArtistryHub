@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X, Users, MessageCircle, TrendingUp, Home } from 'lucide-react'
+import { useSession, signOut } from 'next-auth/react'
+import { Menu, X, Users, MessageCircle, TrendingUp, Home, LogOut, User } from 'lucide-react'
 
 export function SocialWorkerNavbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const { data: session } = useSession()
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -52,14 +54,30 @@ export function SocialWorkerNavbar() {
             </Link>
 
             {/* User Menu */}
-            <div className="relative">
-              <button className="flex items-center space-x-2 text-sm text-gray-700 hover:text-gray-900">
+            {session?.user ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm">
+                    {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || 'U'}
+                  </span>
+                </div>
+                <span className="hidden md:block text-sm text-gray-700">{session.user?.name || session.user?.email}</span>
+                <button
+                  onClick={() => signOut({ callbackUrl: 'http://localhost:3000' })}
+                  className="flex items-center text-gray-600 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                   <Users className="w-4 h-4 text-white" />
                 </div>
-                <span className="hidden md:block">Social Worker</span>
-              </button>
-            </div>
+                <span className="hidden md:block text-sm text-gray-700">Not Signed In</span>
+              </div>
+            )}
 
             {/* Mobile menu button */}
             <div className="md:hidden">
@@ -98,6 +116,31 @@ export function SocialWorkerNavbar() {
                 <Home className="w-4 h-4 mr-3" />
                 Main Store
               </Link>
+              
+              {session?.user && (
+                <>
+                  <div className="flex items-center space-x-3 px-3 py-2 mt-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-sm">
+                        {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{session.user?.name || session.user?.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      signOut({ callbackUrl: 'http://localhost:3000' });
+                      setIsOpen(false);
+                    }}
+                    className="flex items-center w-full px-3 py-2 text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Sign Out
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

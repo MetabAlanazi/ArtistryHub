@@ -21,6 +21,7 @@ declare module 'next-auth' {
       image?: string | null
       role: UserRole
     }
+    reauthAt?: number
   }
   
   interface User extends AuthUser {}
@@ -30,5 +31,6 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string
     role: UserRole
+    reauthAt?: number
   }
 }

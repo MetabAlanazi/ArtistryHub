@@ -91,20 +91,23 @@ cp env.example .env.local
 
 > ⚠️ **IMPORTANT**: These credentials are for testing only. Do not modify or update them.
 
-| Role                | Email                       | Password      | Access                             |
-| ------------------- | --------------------------- | ------------- | ---------------------------------- |
-| **Admin 1**         | `admin@artistryhub.com`     | `Admin123!`   | All apps (3000-3004)               |
-| **Admin 2**         | `admin2@artistryhub.com`    | `Admin123!`   | All apps (3000-3004)               |
-| **Artist 1**        | `artist1@artistryhub.com`   | `artist123`   | Store + Artist (3000, 3002)        |
-| **Artist 2**        | `artist2@artistryhub.com`   | `artist123`   | Store + Artist (3000, 3002)        |
-| **Operator 1**      | `operator1@artistryhub.com` | `operator123` | Store + Operator (3000, 3003)      |
-| **Operator 2**      | `operator2@artistryhub.com` | `operator123` | Store + Operator (3000, 3003)      |
-| **Social Worker 1** | `social1@artistryhub.com`   | `social123`   | Store + Social Worker (3000, 3004) |
-| **Social Worker 2** | `social2@artistryhub.com`   | `social123`   | Store + Social Worker (3000, 3004) |
-| **Customer 1**      | `customer1@example.com`     | `customer123` | Store only (3000)                  |
-| **Customer 2**      | `customer2@example.com`     | `customer123` | Store only (3000)                  |
-| **Service 1**       | `service1@artistryhub.com`  | `service123`  | Store + Service (3000)             |
-| **Service 2**       | `service2@artistryhub.com`  | `service123`  | Store + Service (3000)             |
+| Role                | Email                       | Password               | Access                             |
+| ------------------- | --------------------------- | ---------------------- | ---------------------------------- |
+| **Admin 1**         | `admin@artistryhub.com`     | `Admin2024!Secure#`    | All apps (3000-3004)               |
+| **Admin 2**         | `admin2@artistryhub.com`    | `Admin2024!Secure#`    | All apps (3000-3004)               |
+| **Artist 1**        | `artist1@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)        |
+| **Artist 2**        | `artist2@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)        |
+| **Operator 1**      | `operator1@artistryhub.com` | `Operator2024!Work#`   | Store + Operator (3000, 3003)      |
+| **Operator 2**      | `operator2@artistryhub.com` | `Operator2024!Work#`   | Store + Operator (3000, 3003)      |
+| **Social Worker 1** | `social1@artistryhub.com`   | `Social2024!Help#`     | Store + Social Worker (3000, 3004) |
+| **Social Worker 2** | `social2@artistryhub.com`   | `Social2024!Help#`     | Store + Social Worker (3000, 3004) |
+| **Customer 1**      | `customer1@example.com`     | `Customer2024!Shop#`   | Store only (3000)                  |
+| **Customer 2**      | `customer2@example.com`     | `Customer2024!Shop#`   | Store only (3000)                  |
+| **Service 1**       | `service1@artistryhub.com`  | `Service2024!Support#` | Store + Service (3000)             |
+| **Service 2**       | `service2@artistryhub.com`  | `Service2024!Support#` | Store + Service (3000)             |
+
+> ✅ **VERIFIED**: All test users in the database now match the README exactly. Use `yarn db:seed:readme` to seed only the README users, or `yarn db:seed` for the full database with additional sample data.
+> 🔒 **SECURE**: All passwords now use strong, unique combinations with uppercase, lowercase, numbers, and special characters.
 
 ### **App URLs & Navigation**
 
@@ -142,6 +145,12 @@ yarn workspace @artistry-hub/store dev
 yarn workspace @artistry-hub/admin dev
 yarn workspace @artistry-hub/artist dev
 yarn workspace @artistry-hub/operator dev
+
+# Database operations
+yarn db:seed          # Seed full database with sample data
+yarn db:seed:readme   # Seed only README test users
+yarn db:reset         # Reset database and run migrations
+yarn db:studio        # Open Prisma Studio
 
 # Run all tests
 yarn test
@@ -231,6 +240,8 @@ Before running the seed script, ensure your database is running:
 - ✅ Verify authentication flows
 - ✅ Test role-based access control
 
+**What NOT to Do**:
+
 ```bash
 # Start MySQL database (Docker)
 docker-compose up -d mysql
@@ -242,8 +253,6 @@ DATABASE_URL="mysql://root:root@localhost:3307/art_commerce"
 yarn db:migrate
 yarn db:seed
 ```
-
-````
 
 ## 🧪 Testing
 
@@ -258,7 +267,7 @@ yarn test:ui
 
 # Run tests for specific app
 yarn workspace @artistry-hub/store test
-````
+```
 
 ### E2E Tests (Playwright)
 

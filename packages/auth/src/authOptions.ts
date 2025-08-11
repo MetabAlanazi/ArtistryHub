@@ -63,20 +63,33 @@ export const baseAuthOptions: NextAuthOptions = {
     })
   ],
   session: {
-    strategy: 'jwt'
+    strategy: 'jwt',
+    maxAge: 24 * 60 * 60, // 24 hours
+    updateAge: 60 * 60, // 1 hour
+  },
+  jwt: {
+    maxAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
         token.role = (user as AuthUser).role
+        token.reauthAt = Date.now()
       }
+      
+      // Handle re-auth updates
+      if (trigger === 'update' && session?.reauthAt) {
+        token.reauthAt = session.reauthAt
+      }
+      
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id
-        session.user.role = token.role
+        session.user.id = token.id as string
+        session.user.role = token.role as UserRole
+        session.reauthAt = token.reauthAt as number
       }
       return session
     }
@@ -86,4 +99,5 @@ export const baseAuthOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development',
+  debug: process.env.NODE_ENV === 'development',
 }

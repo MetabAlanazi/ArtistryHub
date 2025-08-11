@@ -58,6 +58,12 @@ export default function AdminNavbar() {
                 >
                   Middleware Control
                 </Link>
+                <Link
+                  href="http://localhost:3000"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-indigo-600 hover:bg-indigo-700"
+                >
+                  🏪 Main Store
+                </Link>
               </div>
             </div>
           </div>

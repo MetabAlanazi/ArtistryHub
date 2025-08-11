@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { ArtistDashboard } from '@/components/artist-dashboard'
+import ArtistDashboard from '@/components/artist-dashboard'
 import { getCurrentUser } from '@/lib/auth'
 
 export default async function ArtistHomePage() {

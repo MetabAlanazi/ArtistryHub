@@ -70,8 +70,11 @@ export default function LoginPage() {
         setError(result.error);
       } else if (result?.ok) {
         setMessage('Sign in successful! Redirecting...');
+        // Immediate redirect for better UX
         const next = searchParams.get('next') || '/';
-        router.replace(next);
+        setTimeout(() => {
+          router.replace(next);
+        }, 100);
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -205,6 +208,14 @@ export default function LoginPage() {
                   Sign up
                 </Link>
               </p>
+            </div>
+
+            <div className="mt-6 bg-gray-50 p-4 rounded-md">
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Test Customer Account:</h3>
+              <div className="text-xs text-gray-600 space-y-1">
+                <div><strong>Email:</strong> customer1@example.com</div>
+                <div><strong>Password:</strong> Customer2024!Shop#</div>
+              </div>
             </div>
           </form>
         </CardContent>
