@@ -10,7 +10,7 @@ function cx(...a: (string | false | undefined)[]) {
   return a.filter(Boolean).join(' ')
 }
 
-type MinimalUser = { name: string | null; image?: string | null; role?: string }
+type MinimalUser = { name: string | null | undefined; email?: string | null; image?: string | null; role?: string }
 
 export default function NavbarClient({ user }: { user: MinimalUser | null }) {
   const pathname = usePathname()
@@ -153,6 +153,23 @@ export default function NavbarClient({ user }: { user: MinimalUser | null }) {
                     Profile
                   </Link>
                   
+                  {/* User-specific pages */}
+                  <Link
+                    href="/orders"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    📋 Orders
+                  </Link>
+                  
+                  <Link
+                    href="/wishlist"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    ❤️ Wishlist
+                  </Link>
+                  
                   {/* Role-based quick access */}
                   {roleLinks.map((link) => (
                     <Link
@@ -239,6 +256,34 @@ export default function NavbarClient({ user }: { user: MinimalUser | null }) {
                 {link.label}
               </Link>
             ))}
+            
+            {/* User-specific pages in mobile menu */}
+            {user && (
+              <div className="border-t pt-2 mt-2">
+                <Link
+                  href="/profile"
+                  onClick={() => setOpen(false)}
+                  className="block px-2 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  👤 Profile
+                </Link>
+                <Link
+                  href="/orders"
+                  onClick={() => setOpen(false)}
+                  className="block px-2 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  📋 Orders
+                </Link>
+                <Link
+                  href="/wishlist"
+                  onClick={() => setOpen(false)}
+                  className="block px-2 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  ❤️ Wishlist
+                </Link>
+              </div>
+            )}
+            
             {!user && (
               <div className="border-t pt-2 mt-2">
                 <Link

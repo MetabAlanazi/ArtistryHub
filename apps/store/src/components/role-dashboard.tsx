@@ -65,7 +65,7 @@ export default function RoleDashboard() {
           title: 'Customer Dashboard',
           description: 'Browse products and manage your orders',
           actions: [
-            { label: 'My Orders', href: '/profile', color: 'bg-gray-600' },
+            { label: 'My Orders', href: '/orders', color: 'bg-gray-600' },
             { label: 'Wishlist', href: '/wishlist', color: 'bg-gray-700' },
             { label: 'Browse Products', href: '/', color: 'bg-gray-800' }
           ],

@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     console.log('Product added to wishlist:', {
       userId: session.user.id,
       productId,
-      productName: product.name
+      productTitle: product.title
     })
 
     return NextResponse.json({

@@ -90,7 +90,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check if session is stale
-  if (token.mustReauthAt) {
+  if (token.mustReauthAt && typeof token.mustReauthAt === 'string') {
     const reauthTime = new Date(token.mustReauthAt).getTime();
     const now = Date.now();
     

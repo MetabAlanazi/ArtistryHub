@@ -1,197 +1,256 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
-import { 
-  Instagram, 
-  Facebook, 
-  Twitter, 
-  Youtube,
-  TrendingUp,
-  Users,
-  MessageCircle,
-  Calendar
-} from 'lucide-react'
+import { useState } from 'react'
+
+interface Campaign {
+  id: string
+  title: string
+  status: 'active' | 'paused' | 'completed'
+  reach: number
+  engagement: number
+  startDate: string
+}
+
+interface CommunityEvent {
+  id: string
+  title: string
+  date: string
+  location: string
+  attendees: number
+  status: 'upcoming' | 'ongoing' | 'completed'
+}
 
 export function SocialWorkerDashboard() {
-  const { data: session } = useSession()
+  const [activeTab, setActiveTab] = useState<'campaigns' | 'events' | 'analytics'>('campaigns')
 
-  const stats = [
+  const campaigns: Campaign[] = [
     {
-      title: 'Active Campaigns',
-      value: '12',
-      icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100',
+      id: '1',
+      title: 'Mental Health Awareness',
+      status: 'active',
+      reach: 15420,
+      engagement: 2340,
+      startDate: '2024-01-15'
     },
     {
-      title: 'Social Channels',
-      value: '8',
-      icon: Users,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      id: '2',
+      title: 'Community Support Network',
+      status: 'active',
+      reach: 8920,
+      engagement: 1560,
+      startDate: '2024-01-20'
     },
     {
-      title: 'Posts This Month',
-      value: '156',
-      icon: MessageCircle,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
-    },
-    {
-      title: 'Scheduled Posts',
-      value: '23',
-      icon: Calendar,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
-    },
-  ]
-
-  const recentCampaigns = [
-    {
-      id: 1,
-      name: 'Summer Art Collection',
-      platform: 'Instagram',
-      status: 'Active',
-      posts: 24,
-      engagement: '12.5%',
-      color: 'bg-gradient-to-r from-purple-400 to-pink-400'
-    },
-    {
-      id: 2,
-      name: 'Artist Spotlight Series',
-      platform: 'Facebook',
-      status: 'Active',
-      posts: 18,
-      engagement: '8.9%',
-      color: 'bg-gradient-to-r from-blue-400 to-cyan-400'
-    },
-    {
-      id: 3,
-      name: 'Community Art Challenge',
-      platform: 'Twitter',
-      status: 'Planning',
-      posts: 0,
-      engagement: '0%',
-      color: 'bg-gradient-to-r from-green-400 to-emerald-400'
+      id: '3',
+      title: 'Youth Empowerment Program',
+      status: 'paused',
+      reach: 12340,
+      engagement: 2100,
+      startDate: '2024-01-10'
     }
   ]
 
-  const socialChannels = [
-    { name: 'Instagram', icon: Instagram, color: 'text-pink-600', followers: '12.5K', posts: 156 },
-    { name: 'Facebook', icon: Facebook, color: 'text-blue-600', followers: '8.9K', posts: 89 },
-    { name: 'Twitter', icon: Twitter, color: 'text-sky-600', followers: '5.2K', posts: 234 },
-    { name: 'YouTube', icon: Youtube, color: 'text-red-600', followers: '3.1K', posts: 45 }
+  const events: CommunityEvent[] = [
+    {
+      id: '1',
+      title: 'Community Wellness Workshop',
+      date: '2024-02-15',
+      location: 'Community Center',
+      attendees: 45,
+      status: 'upcoming'
+    },
+    {
+      id: '2',
+      title: 'Support Group Meeting',
+      date: '2024-02-10',
+      location: 'Library Meeting Room',
+      attendees: 23,
+      status: 'ongoing'
+    },
+    {
+      id: '3',
+      title: 'Family Resource Fair',
+      date: '2024-01-25',
+      location: 'Town Hall',
+      attendees: 120,
+      status: 'completed'
+    }
   ]
 
-  if (!session) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Instagram className="w-8 h-8 text-white" />
-        </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Welcome to Social Worker Portal</h2>
-        <p className="text-gray-600 mb-6">Sign in to manage your social media campaigns and community outreach</p>
-        <button className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-          Sign In to Continue
-        </button>
-      </div>
-    )
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+      case 'upcoming':
+        return 'bg-green-100 text-green-800'
+      case 'paused':
+      case 'ongoing':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'completed':
+        return 'bg-blue-100 text-blue-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
   }
 
   return (
-    <div className="space-y-8">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <div key={stat.title} className="card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+    <div className="space-y-6">
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm font-medium text-gray-500">Active Campaigns</h3>
+          <p className="text-2xl font-bold text-gray-900">{campaigns.filter(c => c.status === 'active').length}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm font-medium text-gray-500">Total Reach</h3>
+          <p className="text-2xl font-bold text-gray-900">{campaigns.reduce((sum, c) => sum + c.reach, 0).toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm font-medium text-gray-500">Upcoming Events</h3>
+          <p className="text-2xl font-bold text-gray-900">{events.filter(e => e.status === 'upcoming').length}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h3 className="text-sm font-medium text-gray-500">Total Attendees</h3>
+          <p className="text-2xl font-bold text-gray-900">{events.reduce((sum, e) => sum + e.attendees, 0)}</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8 px-6">
+            {[
+              { id: 'campaigns', label: 'Social Campaigns' },
+              { id: 'events', label: 'Community Events' },
+              { id: 'analytics', label: 'Analytics' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === tab.id
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="p-6">
+          {activeTab === 'campaigns' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Social Media Campaigns</h3>
+                <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                  New Campaign
+                </button>
               </div>
-              <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reach</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Engagement</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {campaigns.map((campaign) => (
+                      <tr key={campaign.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{campaign.title}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(campaign.status)}`}>
+                            {campaign.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.reach.toLocaleString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{campaign.engagement.toLocaleString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(campaign.startDate).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Campaigns */}
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Campaigns</h3>
-          <div className="space-y-4">
-            {recentCampaigns.map((campaign) => (
-              <div key={campaign.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${campaign.color}`}>
-                    <span className="text-white font-semibold text-sm">
-                      {campaign.platform.charAt(0)}
-                    </span>
+          {activeTab === 'events' && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Community Events</h3>
+                <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                  New Event
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {events.map((event) => (
+                  <div key={event.id} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-medium text-gray-900">{event.title}</h4>
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(event.status)}`}>
+                        {event.status}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{new Date(event.date).toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-600 mb-2">{event.location}</p>
+                    <p className="text-sm text-gray-600">{event.attendees} attendees</p>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{campaign.name}</p>
-                    <p className="text-sm text-gray-500">{campaign.platform}</p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'analytics' && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-medium text-gray-900">Analytics Dashboard</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-4">Campaign Performance</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Total Reach</span>
+                      <span className="text-sm font-medium text-gray-900">{campaigns.reduce((sum, c) => sum + c.reach, 0).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Total Engagement</span>
+                      <span className="text-sm font-medium text-gray-900">{campaigns.reduce((sum, c) => sum + c.engagement, 0).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Engagement Rate</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {((campaigns.reduce((sum, c) => sum + c.engagement, 0) / campaigns.reduce((sum, c) => sum + c.reach, 0)) * 100).toFixed(1)}%
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{campaign.posts} posts</p>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    campaign.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {campaign.status}
-                  </span>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-gray-900 mb-4">Event Statistics</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Total Events</span>
+                      <span className="text-sm font-medium text-gray-900">{events.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Total Attendees</span>
+                      <span className="text-sm font-medium text-gray-900">{events.reduce((sum, e) => sum + e.attendees, 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Avg. Attendance</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {Math.round(events.reduce((sum, e) => sum + e.attendees, 0) / events.length)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Social Channels */}
-        <div className="card p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Social Channels</h3>
-          <div className="space-y-4">
-            {socialChannels.map((channel) => (
-              <div key={channel.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <channel.icon className={`w-8 h-8 ${channel.color}`} />
-                  <div>
-                    <p className="font-medium text-gray-900">{channel.name}</p>
-                    <p className="text-sm text-gray-500">{channel.followers} followers</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{channel.posts} posts</p>
-                  <button className="text-xs text-purple-600 hover:text-purple-700">
-                    Manage
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="card p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-center">
-            <Instagram className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-            <p className="font-medium text-gray-900">Create Campaign</p>
-            <p className="text-sm text-gray-500">Start a new social media campaign</p>
-          </button>
-          <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors text-center">
-            <MessageCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="font-medium text-gray-900">Schedule Post</p>
-            <p className="text-sm text-gray-500">Plan content for later</p>
-          </button>
-          <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors text-center">
-            <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <p className="font-medium text-gray-900">View Analytics</p>
-            <p className="text-sm text-gray-500">Check campaign performance</p>
-          </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

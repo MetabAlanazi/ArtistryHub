@@ -29,6 +29,21 @@ cd apps/store && yarn dev --port 3000
 
 This monorepo is organized into:
 
+### **User Roles & Access**
+
+The platform supports **6 distinct user roles** with different access levels:
+
+| Role                 | Description            | Access                             | Purpose                                  |
+| -------------------- | ---------------------- | ---------------------------------- | ---------------------------------------- |
+| **👑 Admin**         | System administrators  | All apps (3000-3004)               | Platform management, user administration |
+| **🎨 Artist**        | Creative professionals | Store + Artist (3000, 3002)        | Artwork submission, portfolio management |
+| **⚙️ Operator**      | Service operators      | Store + Operator (3000, 3003)      | Order fulfillment, customer support      |
+| **🤝 Social Worker** | Community workers      | Store + Social Worker (3000, 3004) | Community outreach, social programs      |
+| **👤 Customer**      | End users              | Store only (3000)                  | Shopping, orders, wishlist               |
+| **🔧 Service**       | Support staff          | Store + Service (3000)             | Technical support, customer service      |
+
+> **Security**: Each role has access only to their designated applications and features.
+
 ### Apps (`apps/`)
 
 - **`store`** - Customer-facing e-commerce platform (port 3000) - **MAIN APP**
@@ -76,13 +91,20 @@ cp env.example .env.local
 
 > ⚠️ **IMPORTANT**: These credentials are for testing only. Do not modify or update them.
 
-| Role              | Email                      | Password      | Access                             |
-| ----------------- | -------------------------- | ------------- | ---------------------------------- |
-| **Admin**         | `admin@artistryhub.com`    | `admin123`    | All apps (3000-3004)               |
-| **Artist**        | `artist@artistryhub.com`   | `artist123`   | Store + Artist (3000, 3002)        |
-| **Operator**      | `operator@artistryhub.com` | `operator123` | Store + Operator (3000, 3003)      |
-| **Social Worker** | `social@artistryhub.com`   | `social123`   | Store + Social Worker (3000, 3004) |
-| **Customer**      | `customer@artistryhub.com` | `customer123` | Store only (3000)                  |
+| Role                | Email                       | Password      | Access                             |
+| ------------------- | --------------------------- | ------------- | ---------------------------------- |
+| **Admin 1**         | `admin@artistryhub.com`     | `Admin123!`   | All apps (3000-3004)               |
+| **Admin 2**         | `admin2@artistryhub.com`    | `Admin123!`   | All apps (3000-3004)               |
+| **Artist 1**        | `artist1@artistryhub.com`   | `artist123`   | Store + Artist (3000, 3002)        |
+| **Artist 2**        | `artist2@artistryhub.com`   | `artist123`   | Store + Artist (3000, 3002)        |
+| **Operator 1**      | `operator1@artistryhub.com` | `operator123` | Store + Operator (3000, 3003)      |
+| **Operator 2**      | `operator2@artistryhub.com` | `operator123` | Store + Operator (3000, 3003)      |
+| **Social Worker 1** | `social1@artistryhub.com`   | `social123`   | Store + Social Worker (3000, 3004) |
+| **Social Worker 2** | `social2@artistryhub.com`   | `social123`   | Store + Social Worker (3000, 3004) |
+| **Customer 1**      | `customer1@example.com`     | `customer123` | Store only (3000)                  |
+| **Customer 2**      | `customer2@example.com`     | `customer123` | Store only (3000)                  |
+| **Service 1**       | `service1@artistryhub.com`  | `service123`  | Store + Service (3000)             |
+| **Service 2**       | `service2@artistryhub.com`  | `service123`  | Store + Service (3000)             |
 
 ### **App URLs & Navigation**
 
@@ -91,6 +113,19 @@ cp env.example .env.local
 - **Artist Dashboard**: `http://localhost:3002` (Artist role only)
 - **Operator Panel**: `http://localhost:3003` (Operator role only)
 - **Social Worker Portal**: `http://localhost:3004` (Social Worker role only)
+
+### **Smart Login Redirection**
+
+> 🎯 **Role-Based Auto-Redirect**: After login, users are automatically redirected to their appropriate app based on their role.
+
+| Role              | Login Redirect              | Purpose                  |
+| ----------------- | --------------------------- | ------------------------ |
+| **Admin**         | Admin Portal (3001)         | System administration    |
+| **Artist**        | Artist Portal (3002)        | Art creation & portfolio |
+| **Operator**      | Operator Portal (3003)      | Order fulfillment        |
+| **Social Worker** | Social Worker Portal (3004) | Community outreach       |
+| **Customer**      | Main Store (3000)           | Shopping & orders        |
+| **Service**       | Main Store (3000)           | Support & assistance     |
 
 ### **Logout Behavior**
 
@@ -151,6 +186,65 @@ yarn db:studio
 yarn db:seed
 ```
 
+### **Database Seeding**
+
+The database comes pre-seeded with **12 test users** (2 of each role type) for comprehensive testing:
+
+- **👑 2 Admin users** - Full platform access
+- **🎨 2 Artist users** - Store + Artist dashboard access
+- **⚙️ 2 Operator users** - Store + Operator panel access
+- **🤝 2 Social Worker users** - Store + Social worker portal access
+- **👤 2 Customer users** - Store-only access
+- **🔧 2 Service users** - Store + Service access
+
+> **Note**: All users are created without passwords for security. Implement password authentication as needed for production.
+
+> **⚠️ IMPORTANT**: Do not modify or delete these test user accounts as they are permanently saved in the database and used by the system for role-based access control and testing purposes.
+
+#### **Database Setup Requirements**
+
+Before running the seed script, ensure your database is running:
+
+#### **Database Persistence & User Accounts**
+
+> **🔒 CRITICAL**: The test user accounts created by the seed script are **permanently stored** in the database and should **NEVER** be modified or deleted.
+
+**Why Preserve Test Users**:
+
+- **System Integration**: These accounts are integrated with the authentication system
+- **Role-Based Access**: Each user has specific permissions and access levels
+- **Testing Consistency**: Provides reliable test accounts for development and QA
+- **Database Integrity**: Modifying these accounts can break system functionality
+- **Production Safety**: Prevents accidental deletion of essential system accounts
+
+**What NOT to Do**:
+
+- ❌ Delete test user accounts
+- ❌ Modify user roles or permissions
+- ❌ Change email addresses
+- ❌ Remove user records from database
+
+**What IS Safe to Do**:
+
+- ✅ Use test accounts for development
+- ✅ Test different user roles and permissions
+- ✅ Verify authentication flows
+- ✅ Test role-based access control
+
+```bash
+# Start MySQL database (Docker)
+docker-compose up -d mysql
+
+# Update DATABASE_URL in .env.local to use port 3307
+DATABASE_URL="mysql://root:root@localhost:3307/art_commerce"
+
+# Run migrations and seed
+yarn db:migrate
+yarn db:seed
+```
+
+````
+
 ## 🧪 Testing
 
 ### Unit Tests (Vitest)
@@ -164,7 +258,7 @@ yarn test:ui
 
 # Run tests for specific app
 yarn workspace @artistry-hub/store test
-```
+````
 
 ### E2E Tests (Playwright)
 
@@ -225,6 +319,30 @@ yarn workspace @artistry-hub/store start
 ```
 
 ## 🔧 **Recent Updates & Fixes**
+
+### **📝 Latest Commit: Enhanced User Management & Documentation**
+
+**Commit Message**: `feat: implement order/wishlist navbar hiding and create comprehensive test user accounts`
+
+**Changes Made**:
+
+- **Navbar Security**: Hidden Order & Wishlist links from public navigation for unauthenticated users
+- **Session-Based Access**: Implemented proper authentication checks for protected routes
+- **User Menu Integration**: Added Order & Wishlist links to authenticated user dropdown menus
+- **Test User Expansion**: Created 12 test users (2 of each role type) for comprehensive testing
+- **Database Seeding**: Updated seed script to generate multiple users per role
+- **Documentation**: Enhanced README with complete user credentials and role descriptions
+- **Security Notes**: Added warnings about preserving test user accounts
+
+**Files Modified**:
+
+- `apps/store/src/app/(components)/nav.config.ts` - Removed public Order/Wishlist links
+- `apps/store/src/app/(components)/NavbarClient.tsx` - Added user menu integration
+- `apps/store/src/components/navigation.tsx` - Updated navigation components
+- `apps/store/src/app/orders/page.tsx` - Created protected Orders page
+- `apps/store/src/app/wishlist/page.tsx` - Created protected Wishlist page
+- `packages/db/prisma/seed.ts` - Enhanced with 12 test users
+- `README.md` - Comprehensive documentation updates
 
 ### **✅ Resolved Issues**
 

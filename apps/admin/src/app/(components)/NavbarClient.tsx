@@ -60,13 +60,16 @@ export default function NavbarClient({ user }: { user: MinimalUser | null }) {
                   {(user.name ?? 'U').slice(0, 2).toUpperCase()}
                 </div>
               )}
-              <span className="text-sm text-gray-800">{user.name ?? 'User'}</span>
-                              <button
-                  onClick={() => signOut({ callbackUrl: 'http://localhost:3000/store' })}
-                  className="ml-2 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  🚪 Logout
-                </button>
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500">Logged in as:</span>
+                <span className="text-sm font-medium text-gray-800">{user.name ?? 'User'}</span>
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: 'http://localhost:3000/store' })}
+                className="ml-2 px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                🚪 Logout
+              </button>
             </div>
           ) : (
             <Link href="/login" className="text-sm underline">

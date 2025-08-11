@@ -6,7 +6,7 @@ export default async function Navbar() {
     const user = await getCurrentUser()
     // only pass minimal fields to client
     const minimal = user
-      ? { name: user.name, image: user.image ?? null, role: user.role }
+      ? { name: user.name, email: user.email, image: user.image ?? null, role: user.role }
       : null
     return <NavbarClient user={minimal} />
   } catch (error) {

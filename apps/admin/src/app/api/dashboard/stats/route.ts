@@ -22,13 +22,13 @@ export async function GET() {
       }),
       prisma.order.findMany({
         take: 5,
-        orderBy: { createdAt: 'desc' },
-        include: { payment: true }
+        orderBy: { placedAt: 'desc' },
+        include: { payments: true, items: true }
       }),
       prisma.product.findMany({
         take: 5,
         where: { status: 'PUBLISHED' },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { updatedAt: 'desc' }
       })
     ])
 

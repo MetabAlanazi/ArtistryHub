@@ -136,6 +136,13 @@ export default function Navigation() {
                     >
                       📋 Orders
                     </Link>
+                    <Link
+                      href="/wishlist"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      ❤️ Wishlist
+                    </Link>
                     <button
                       onClick={() => {
                         handleSignOut();
@@ -241,6 +248,13 @@ export default function Navigation() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       📋 Orders
+                    </Link>
+                    <Link
+                      href="/wishlist"
+                      className="text-gray-700 hover:text-indigo-600 block px-3 py-2 text-base font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      ❤️ Wishlist
                     </Link>
                     <button
                       onClick={() => {

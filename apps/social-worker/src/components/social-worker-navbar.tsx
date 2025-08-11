@@ -1,76 +1,107 @@
 'use client'
 
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
-import { 
-  Instagram, 
-  Facebook, 
-  Twitter, 
-  Youtube,
-  User,
-  LogOut
-} from 'lucide-react'
+import { useState } from 'react'
+import { Menu, X, Users, MessageCircle, TrendingUp, Home } from 'lucide-react'
 
 export function SocialWorkerNavbar() {
-  const { data: session } = useSession()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const navigation = [
+    { name: 'Dashboard', href: '/', icon: Home },
+    { name: 'Campaigns', href: '/campaigns', icon: MessageCircle },
+    { name: 'Events', href: '/events', icon: Users },
+    { name: 'Analytics', href: '/analytics', icon: TrendingUp },
+  ]
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
-            <Link href="http://localhost:3000/store" className="flex items-center space-x-2 text-blue-600 hover:text-blue-800">
-              🏠 Main Store
-            </Link>
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Instagram className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-semibold text-xl text-gray-900">Social Worker</span>
-            </Link>
-            
-            <div className="hidden md:flex items-center space-x-6">
-              <Link href="/campaigns" className="text-gray-600 hover:text-gray-900">
-                Campaigns
+    <nav className="bg-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-gray-900">Social Worker Portal</span>
               </Link>
-              <Link href="/channels" className="text-gray-600 hover:text-gray-900">
-                Channels
-              </Link>
-              <Link href="/analytics" className="text-gray-600 hover:text-gray-900">
-                Analytics
-              </Link>
-              <Link href="/community" className="text-gray-600 hover:text-gray-900">
-                Community
-              </Link>
+            </div>
+            <div className="hidden md:ml-6 md:flex md:space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900 border-b-2 border-transparent hover:border-purple-300"
+                >
+                  <item.icon className="w-4 h-4 mr-2" />
+                  {item.name}
+                </Link>
+              ))}
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
-            {session ? (
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2 text-sm text-gray-700">
-                  <User className="w-4 h-4" />
-                  <span>{session.user?.name || 'User'}</span>
+            {/* Main Store Link */}
+            <Link
+              href="http://localhost:3000/store"
+              className="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Main Store
+            </Link>
+
+            {/* User Menu */}
+            <div className="relative">
+              <button className="flex items-center space-x-2 text-sm text-gray-700 hover:text-gray-900">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <Users className="w-4 h-4 text-white" />
                 </div>
-                <button
-                  onClick={() => signOut({ callbackUrl: 'http://localhost:3000/store' })}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/auth/signin"
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                <span className="hidden md:block">Social Worker</span>
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
               >
-                Sign In
-              </Link>
-            )}
+                {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {isOpen && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsOpen(false)}
+              >
+                <item.icon className="w-4 h-4 mr-3" />
+                {item.name}
+              </Link>
+            ))}
+            <div className="pt-4 border-t border-gray-200">
+              <Link
+                href="http://localhost:3000/store"
+                className="flex items-center px-3 py-2 text-base font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-md"
+                onClick={() => setIsOpen(false)}
+              >
+                <Home className="w-4 h-4 mr-3" />
+                Main Store
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

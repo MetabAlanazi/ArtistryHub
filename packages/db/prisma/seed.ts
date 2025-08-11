@@ -19,11 +19,20 @@ async function main() {
   // Create sample users with different roles
   console.log('👥 Creating sample users...');
 
-  // Admin user
-  const admin = await prisma.user.create({
+  // Admin users
+  const admin1 = await prisma.user.create({
     data: {
-      email: 'admin@artistryhub.com',
+      email: 'admin1@artistryhub.com',
       name: 'System Administrator',
+      role: 'admin',
+      status: 'ACTIVE',
+    },
+  });
+
+  const admin2 = await prisma.user.create({
+    data: {
+      email: 'admin2@artistryhub.com',
+      name: 'Platform Manager',
       role: 'admin',
       status: 'ACTIVE',
     },
@@ -48,21 +57,39 @@ async function main() {
     },
   });
 
-  // Operator user
-  const operator = await prisma.user.create({
+  // Operator users
+  const operator1 = await prisma.user.create({
     data: {
-      email: 'operator@artistryhub.com',
+      email: 'operator1@artistryhub.com',
       name: 'Gallery Operator',
       role: 'operator',
       status: 'ACTIVE',
     },
   });
 
-  // Social Worker user
-  const socialWorker = await prisma.user.create({
+  const operator2 = await prisma.user.create({
     data: {
-      email: 'social@artistryhub.com',
+      email: 'operator2@artistryhub.com',
+      name: 'Fulfillment Manager',
+      role: 'operator',
+      status: 'ACTIVE',
+    },
+  });
+
+  // Social Worker users
+  const socialWorker1 = await prisma.user.create({
+    data: {
+      email: 'social1@artistryhub.com',
       name: 'Community Social Worker',
+      role: 'social_worker',
+      status: 'ACTIVE',
+    },
+  });
+
+  const socialWorker2 = await prisma.user.create({
+    data: {
+      email: 'social2@artistryhub.com',
+      name: 'Outreach Coordinator',
       role: 'social_worker',
       status: 'ACTIVE',
     },
@@ -87,14 +114,33 @@ async function main() {
     },
   });
 
+  // Service users
+  const service1 = await prisma.user.create({
+    data: {
+      email: 'service1@artistryhub.com',
+      name: 'Support Agent',
+      role: 'service',
+      status: 'ACTIVE',
+    },
+  });
+
+  const service2 = await prisma.user.create({
+    data: {
+      email: 'service2@artistryhub.com',
+      name: 'Technical Specialist',
+      role: 'service',
+      status: 'ACTIVE',
+    },
+  });
+
   console.log('✅ Users created successfully!');
 
   // Create sample addresses
   console.log('🏠 Creating sample addresses...');
 
-  const adminAddress = await prisma.address.create({
+  const admin1Address = await prisma.address.create({
     data: {
-      userId: admin.id,
+      userId: admin1.id,
       line1: '123 Admin Street',
       city: 'Admin City',
       country: 'Admin Country',
@@ -103,13 +149,24 @@ async function main() {
     },
   });
 
+  const admin2Address = await prisma.address.create({
+    data: {
+      userId: admin2.id,
+      line1: '456 Admin Avenue',
+      city: 'Management City',
+      country: 'Admin Country',
+      phone: '+1234567891',
+      isDefault: true,
+    },
+  });
+
   const artist1Address = await prisma.address.create({
     data: {
       userId: artist1.id,
-      line1: '456 Artist Lane',
+      line1: '789 Artist Lane',
       city: 'Creative City',
       country: 'Art Country',
-      phone: '+1234567891',
+      phone: '+1234567892',
       isDefault: true,
     },
   });
@@ -117,32 +174,54 @@ async function main() {
   const artist2Address = await prisma.address.create({
     data: {
       userId: artist2.id,
-      line1: '789 Artist Road',
+      line1: '321 Artist Road',
       city: 'Artistic City',
       country: 'Creative Country',
-      phone: '+1234567892',
-      isDefault: true,
-    },
-  });
-
-  const operatorAddress = await prisma.address.create({
-    data: {
-      userId: operator.id,
-      line1: '321 Operator Blvd',
-      city: 'Gallery City',
-      country: 'Art Country',
       phone: '+1234567893',
       isDefault: true,
     },
   });
 
-  const socialWorkerAddress = await prisma.address.create({
+  const operator1Address = await prisma.address.create({
     data: {
-      userId: socialWorker.id,
-      line1: '654 Social Ave',
+      userId: operator1.id,
+      line1: '654 Operator Blvd',
+      city: 'Gallery City',
+      country: 'Art Country',
+      phone: '+1234567894',
+      isDefault: true,
+    },
+  });
+
+  const operator2Address = await prisma.address.create({
+    data: {
+      userId: operator2.id,
+      line1: '987 Operator Drive',
+      city: 'Fulfillment City',
+      country: 'Art Country',
+      phone: '+1234567895',
+      isDefault: true,
+    },
+  });
+
+  const socialWorker1Address = await prisma.address.create({
+    data: {
+      userId: socialWorker1.id,
+      line1: '147 Social Ave',
       city: 'Community City',
       country: 'Social Country',
-      phone: '+1234567894',
+      phone: '+1234567896',
+      isDefault: true,
+    },
+  });
+
+  const socialWorker2Address = await prisma.address.create({
+    data: {
+      userId: socialWorker2.id,
+      line1: '258 Social Street',
+      city: 'Outreach City',
+      country: 'Social Country',
+      phone: '+1234567897',
       isDefault: true,
     },
   });
@@ -150,10 +229,10 @@ async function main() {
   const customer1Address = await prisma.address.create({
     data: {
       userId: customer1.id,
-      line1: '987 Customer Way',
+      line1: '369 Customer Way',
       city: 'Customer City',
       country: 'Customer Country',
-      phone: '+1234567895',
+      phone: '+1234567898',
       isDefault: true,
     },
   });
@@ -161,10 +240,32 @@ async function main() {
   const customer2Address = await prisma.address.create({
     data: {
       userId: customer2.id,
-      line1: '147 Customer Drive',
+      line1: '741 Customer Drive',
       city: 'Client City',
       country: 'Client Country',
-      phone: '+1234567896',
+      phone: '+1234567899',
+      isDefault: true,
+    },
+  });
+
+  const service1Address = await prisma.address.create({
+    data: {
+      userId: service1.id,
+      line1: '852 Service Road',
+      city: 'Support City',
+      country: 'Service Country',
+      phone: '+1234567900',
+      isDefault: true,
+    },
+  });
+
+  const service2Address = await prisma.address.create({
+    data: {
+      userId: service2.id,
+      line1: '963 Service Lane',
+      city: 'Technical City',
+      country: 'Service Country',
+      phone: '+1234567901',
       isDefault: true,
     },
   });
@@ -174,13 +275,18 @@ async function main() {
   // Display created users
   console.log('\n📋 Created Users:');
   console.log('-------------------');
-  console.log(`👑 Admin: ${admin.email} (${admin.name})`);
+  console.log(`👑 Admin 1: ${admin1.email} (${admin1.name})`);
+  console.log(`👑 Admin 2: ${admin2.email} (${admin2.name})`);
   console.log(`🎨 Artist 1: ${artist1.email} (${artist1.name})`);
   console.log(`🎨 Artist 2: ${artist2.email} (${artist2.name})`);
-  console.log(`⚙️  Operator: ${operator.email} (${operator.name})`);
-  console.log(`🤝 Social Worker: ${socialWorker.email} (${socialWorker.name})`);
+  console.log(`⚙️  Operator 1: ${operator1.email} (${operator1.name})`);
+  console.log(`⚙️  Operator 2: ${operator2.email} (${operator2.name})`);
+  console.log(`🤝 Social Worker 1: ${socialWorker1.email} (${socialWorker1.name})`);
+  console.log(`🤝 Social Worker 2: ${socialWorker2.email} (${socialWorker2.name})`);
   console.log(`👤 Customer 1: ${customer1.email} (${customer1.name})`);
   console.log(`👤 Customer 2: ${customer2.email} (${customer2.name})`);
+  console.log(`🔧 Service 1: ${service1.email} (${service1.name})`);
+  console.log(`🔧 Service 2: ${service2.email} (${service2.name})`);
   console.log('\n⚠️  Note: These users have no passwords set yet.');
   console.log('   You will need to implement password authentication separately.');
 
