@@ -8,7 +8,24 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+// Create a single Prisma instance with performance optimizations
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  errorFormat: 'pretty',
+  // Performance optimizations
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+  // Connection pooling for better performance
+  __internal: {
+    engine: {
+      enableEngineDebugMode: false,
+      enableQueryLogging: false,
+    },
+  },
+})
 
 export const authOptions: NextAuthOptions = {
   ...baseAuthOptions,
@@ -25,9 +42,17 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Find user by email
+          // Find user by email with optimized query
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email }
+            where: { email: credentials.email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              hashedPassword: true,
+              role: true,
+              status: true
+            }
           })
 
           if (!user || !user.hashedPassword) {
