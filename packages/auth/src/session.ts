@@ -1,12 +1,12 @@
 import { getServerSession } from 'next-auth'
-import { authOptions } from './authOptions'
+import { baseAuthOptions } from './authOptions'
 import type { UserRole } from './types'
 
 export interface AppAccess {
   app: string
   url: string
   hasAccess: boolean
-  redirectUrl?: string
+  redirectUrl?: string | undefined
 }
 
 export interface UserSession {
@@ -55,15 +55,15 @@ export class SessionManager {
    */
   static async getSession(): Promise<UserSession | null> {
     try {
-      const session = await getServerSession(authOptions)
+      const session = await getServerSession(baseAuthOptions)
       if (!session?.user) return null
 
       return {
         id: session.user.id,
-        email: session.user.email,
+        email: session.user.email || '',
         name: session.user.name || '',
         role: session.user.role as UserRole,
-        status: session.user.status || 'ACTIVE'
+        status: 'ACTIVE' // Default status since it's not in the base session
       }
     } catch (error) {
       console.error('Session retrieval error:', error)
@@ -194,7 +194,7 @@ export class SessionManager {
  */
 export async function getSessionWithValidation(): Promise<{
   session: UserSession | null
-  error?: string
+  error?: string | undefined
 }> {
   try {
     const session = await SessionManager.getSession()
@@ -213,8 +213,3 @@ export async function getSessionWithValidation(): Promise<{
     return { session: null, error: 'Session validation failed' }
   }
 }
-
-/**
- * Export session manager for direct use
- */
-export { SessionManager }

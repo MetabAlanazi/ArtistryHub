@@ -44,17 +44,20 @@
 ## 9. Session Management & Authentication Rules
 
 ### 9.1 Role-Based Access Control (RBAC)
+
 - **NEVER** allow users to access apps they shouldn't have access to
 - **ALWAYS** implement automatic redirects based on user roles
 - **ENFORCE** app boundaries through middleware and session validation
 
 ### 9.2 Session Management Best Practices
+
 - Use centralized `SessionManager` class for all session operations
 - Implement automatic role-based app redirects for all users
 - Validate user status and role before granting access
 - Log all redirects and access attempts for security auditing
 
 ### 9.3 App Access Matrix
+
 ```
 User Role    | Store | Admin | Artist | Operator | Social Worker
 -------------|-------|-------|--------|----------|---------------
@@ -66,6 +69,7 @@ Social Worker|  ✅   |  ❌   |   ❌   |    ❌    |      ✅
 ```
 
 ### 9.4 Primary App Assignment
+
 - **Admin** → Admin Portal (localhost:3001)
 - **Artist** → Artist Dashboard (localhost:3002)
 - **Operator** → Operator Panel (localhost:3003)
@@ -73,12 +77,14 @@ Social Worker|  ✅   |  ❌   |   ❌   |    ❌    |      ✅
 - **Customer** → Store (localhost:3000)
 
 ### 9.5 Middleware Requirements
+
 - All apps must implement role-based access control
 - Use `SessionManager.shouldRedirect()` for automatic redirects
 - Log all access attempts and redirects
 - Prevent unauthorized cross-app access
 
 ### 9.6 Security Enforcement
+
 - **NEVER** hardcode app URLs in middleware
 - **ALWAYS** use environment variables for app URLs
 - **VALIDATE** user sessions before granting access

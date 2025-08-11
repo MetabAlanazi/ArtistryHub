@@ -7,8 +7,18 @@ import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import type { UserRole } from '@artistry-hub/auth'
 
 const prisma = new PrismaClient()
+
+// Extend the User type to include our custom properties
+interface CustomUser {
+  id: string
+  email: string
+  name: string
+  role: UserRole
+  status: string
+}
 
 export const authOptions: NextAuthOptions = {
   ...baseAuthOptions,
@@ -48,7 +58,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role,
             status: user.status
-          }
+          } as CustomUser
         } catch (error) {
           console.error('Authentication error:', error)
           return null
@@ -60,15 +70,17 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub as string;
-        session.user.role = token.role as string;
-        session.user.status = token.status as string;
+        session.user.role = token.role as UserRole;
+        // Note: status is not part of the standard NextAuth session
+        // We'll handle it in the JWT token instead
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
-        token.status = user.status;
+        const customUser = user as CustomUser;
+        token.role = customUser.role;
+        token.status = customUser.status;
       }
       return token;
     }

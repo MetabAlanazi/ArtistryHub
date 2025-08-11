@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { SessionManager } from '@artistry-hub/auth';
+// import { SessionManager } from '@artistry-hub/auth';
+// import type { UserRole } from '@artistry-hub/auth';
 
 // Public paths that don't require authentication
 const publicPaths = [
@@ -60,23 +61,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // TODO: Re-enable session management after fixing import issues
   // If user is authenticated, check if they should be redirected to their primary app
-  if (token.role) {
-    const userRole = token.role as string;
-    const redirectCheck = SessionManager.shouldRedirect(userRole, 'store');
-    
-    if (redirectCheck.shouldRedirect && redirectCheck.redirectUrl) {
-      console.log(`🔄 Redirecting ${userRole} user to primary app: ${redirectCheck.redirectUrl}`);
-      
-      // Add the current path as a callback URL if it's a protected path
-      let redirectUrl = redirectCheck.redirectUrl;
-      if (isProtectedPath) {
-        redirectUrl += pathname;
-      }
-      
-      return NextResponse.redirect(new URL(redirectUrl));
-    }
-  }
+  // if (token.role) {
+  //   const userRole = token.role as UserRole;
+  //   const redirectCheck = SessionManager.shouldRedirect(userRole, 'store');
+  //   
+  //   if (redirectCheck.shouldRedirect && redirectCheck.redirectUrl) {
+  //     console.log(`🔄 Redirecting ${userRole} user to primary app: ${redirectCheck.redirectUrl}`);
+  //     
+  //     // Add the current path as a callback URL if it's a protected path
+  //     let redirectUrl = redirectCheck.redirectUrl;
+  //     if (isProtectedPath) {
+  //       redirectUrl += pathname;
+  //     }
+  //     
+  //     return NextResponse.redirect(new URL(redirectUrl));
+  //   }
+  // }
 
   // Check if session is stale
   if (token.mustReauthAt && typeof token.mustReauthAt === 'string') {
