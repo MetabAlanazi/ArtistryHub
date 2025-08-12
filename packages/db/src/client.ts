@@ -10,14 +10,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   // Performance optimizations
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-  // Connection pooling for better performance
-  __internal: {
-    engine: {
-      enableEngineDebugMode: false,
-      enableQueryLogging: false,
+      url: process.env.DATABASE_URL || '',
     },
   },
 })

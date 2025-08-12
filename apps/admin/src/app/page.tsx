@@ -1,54 +1,43 @@
-import { Suspense } from 'react'
-import { redirect } from 'next/navigation'
-import { DashboardStats } from '@/components/dashboard-stats'
-import { RecentOrders } from '@/components/recent-orders'
-import { ProductApprovals } from '@/components/product-approvals'
-import { getCurrentUser } from '@/lib/auth'
+'use client'
 
-export default async function AdminDashboard() {
-  const user = await getCurrentUser()
-  
-  // Redirect to login if not authenticated
-  if (!user) {
-    redirect('/login?next=/')
-  }
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Greeting Section */}
-      <div className="bg-white border rounded-lg p-6 mb-8">
-        <div className="space-y-3">
-          <h1 className="text-2xl font-bold">
-            Welcome{user?.name ? `, ${user.name}` : ''} 👋
-          </h1>
-          <p className="text-gray-600">
-            {user
-              ? 'You are signed in. Explore your workspace using the navbar.'
-              : 'Please sign in to access your dashboard.'}
-          </p>
+export default function AdminHomePage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      // User is authenticated, redirect to dashboard
+      router.replace('/dashboard')
+    } else if (status === 'unauthenticated') {
+      // User is not authenticated, redirect to login
+      router.replace('/auth/login')
+    }
+  }, [status, session, router])
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
+    )
+  }
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-2 text-gray-600">
-          Overview of your art commerce platform
-        </p>
-      </div>
-
-      <Suspense fallback={<div>Loading stats...</div>}>
-        <DashboardStats />
-      </Suspense>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-        <Suspense fallback={<div>Loading orders...</div>}>
-          <RecentOrders />
-        </Suspense>
-        <Suspense fallback={<div>Loading approvals...</div>}>
-          <ProductApprovals />
-        </Suspense>
+  // This should not render, but just in case
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+        <p className="mt-4 text-gray-600">Redirecting...</p>
       </div>
     </div>
   )
 }
-

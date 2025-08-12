@@ -1,117 +1,24 @@
-// Re-export all auth utilities from the centralized auth package
-export * from '@artistry-hub/auth'
-
-// App-specific auth options extending the base
 import { baseAuthOptions } from '@artistry-hub/auth'
-import { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
+import type { NextAuthOptions } from 'next-auth'
 
-// Create a single Prisma instance with performance optimizations
-const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  errorFormat: 'pretty',
-  // Performance optimizations
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-  // Connection pooling for better performance
-  __internal: {
-    engine: {
-      enableEngineDebugMode: false,
-      enableQueryLogging: false,
-    },
-  },
-})
-
+// Admin app extends the base auth options
 export const authOptions: NextAuthOptions = {
   ...baseAuthOptions,
-  providers: [
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
-
-        try {
-          // Find user by email with optimized query
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              hashedPassword: true,
-              role: true,
-              status: true
-            }
-          })
-
-          if (!user || !user.hashedPassword) {
-            return null
-          }
-
-          // Verify password
-          const isValidPassword = await bcrypt.compare(credentials.password, user.hashedPassword)
-          
-          if (!isValidPassword) {
-            return null
-          }
-
-          // Return user object for NextAuth
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-            status: user.status
-          }
-        } catch (error) {
-          console.error('Authentication error:', error)
-          return null
-        }
-      }
-    })
-  ],
-  callbacks: {
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub as string;
-        session.user.role = token.role as string;
-        session.user.status = token.status as string;
-      }
-      return session;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.status = user.status;
-      }
-      return token;
-    }
-  },
+  // Admin-specific overrides can go here
   pages: {
-    signIn: '/login',
-    error: '/login',
+    ...baseAuthOptions.pages,
+    signIn: '/auth/login', // Admin-specific login page
   },
-  cookies: {
-    sessionToken: {
-      name: `admin-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 30 * 24 * 60 * 60 // 30 days
+  // Admin app configuration
+  callbacks: {
+    ...baseAuthOptions.callbacks,
+    async signIn({ user, account, profile, email, credentials }) {
+      // Additional admin-specific validation
+      if (user && credentials && typeof credentials === 'object' && 'appName' in credentials) {
+        const appName = (credentials as any).appName
+        return appName === 'admin' // Only allow admin app access
       }
+      return true
     }
   }
 }

@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import Navbar from './(components)/Navbar'
+import AdminNavbar from '@/components/AdminNavbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'ArtistryHub Admin',
-  description: 'Admin dashboard for ArtistryHub art commerce platform.',
+  description: 'Administrative portal for ArtistryHub',
 }
 
 export default function RootLayout({
@@ -20,8 +20,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Navbar />
-          <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+          <AdminNavbar />
+          {children}
         </Providers>
       </body>
     </html>

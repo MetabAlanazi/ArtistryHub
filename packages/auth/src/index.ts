@@ -1,15 +1,5 @@
-// Core authentication exports
-export * from './authOptions'
-export * from './types'
-export * from './helpers'
-export * from './middleware'
-export * from './session'
-
-// Enterprise-grade session management
-export * from './session-manager'
-export * from './auth-api'
-export * from './enhanced-middleware'
-
-// Re-export NextAuth types for convenience
-export type { NextAuthOptions, Session, User } from 'next-auth'
-export type { JWT } from 'next-auth/jwt'
+// Export the main authentication components
+export { baseAuthOptions, checkAppAccess } from './authOptions'
+export { sessionManager } from './session-manager'
+export { createProtectedMiddleware, adminMiddleware, artistMiddleware, operatorMiddleware, socialWorkerMiddleware, customerMiddleware, protectedMiddleware } from './middleware'
+export type { AuthUser, AuthSession, AuthJWT, UserRole, AuthConfig, SessionValidationResult, LoginCredentials, AuthResponse, RolePermissions, AuditLogEntry } from './types'

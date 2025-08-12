@@ -76,7 +76,6 @@ async function main() {
       hashedPassword: admin1Password,
       role: 'admin',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -88,7 +87,6 @@ async function main() {
       hashedPassword: admin2Password,
       role: 'admin',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -101,7 +99,6 @@ async function main() {
       hashedPassword: artist1Password,
       role: 'artist',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -113,7 +110,6 @@ async function main() {
       hashedPassword: artist2Password,
       role: 'artist',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -126,7 +122,6 @@ async function main() {
       hashedPassword: operator1Password,
       role: 'operator',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -138,7 +133,6 @@ async function main() {
       hashedPassword: operator2Password,
       role: 'operator',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -151,7 +145,6 @@ async function main() {
       hashedPassword: social1Password,
       role: 'social_worker',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -163,7 +156,6 @@ async function main() {
       hashedPassword: social2Password,
       role: 'social_worker',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -176,7 +168,6 @@ async function main() {
       hashedPassword: customer1Password,
       role: 'customer',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -189,7 +180,6 @@ async function main() {
       hashedPassword: customer2Password,
       role: 'customer',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -202,7 +192,6 @@ async function main() {
       hashedPassword: service1Password,
       role: 'service',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -214,7 +203,6 @@ async function main() {
       hashedPassword: service2Password,
       role: 'service',
       status: 'ACTIVE',
-      emailVerified: new Date(),
     },
   });
 
@@ -235,142 +223,7 @@ async function main() {
   console.log('   Service 2: service2@artistryhub.com / Service2024!Support#');
   console.log('');
 
-  // Create sample addresses
-  console.log('🏠 Creating sample addresses...');
 
-  const admin1Address = await prisma.address.create({
-    data: {
-      userId: admin1.id,
-      line1: '123 Admin Street',
-      city: 'Admin City',
-      country: 'Admin Country',
-      phone: '+1234567890',
-      isDefault: true,
-    },
-  });
-
-  const admin2Address = await prisma.address.create({
-    data: {
-      userId: admin2.id,
-      line1: '456 Admin Avenue',
-      city: 'Management City',
-      country: 'Admin Country',
-      phone: '+1234567891',
-      isDefault: true,
-    },
-  });
-
-  const artist1Address = await prisma.address.create({
-    data: {
-      userId: artist1.id,
-      line1: '789 Artist Lane',
-      city: 'Creative City',
-      country: 'Art Country',
-      phone: '+1234567892',
-      isDefault: true,
-    },
-  });
-
-  const artist2Address = await prisma.address.create({
-    data: {
-      userId: artist2.id,
-      line1: '321 Artist Road',
-      city: 'Artistic City',
-      country: 'Creative Country',
-      phone: '+1234567893',
-      isDefault: true,
-    },
-  });
-
-  const operator1Address = await prisma.address.create({
-    data: {
-      userId: operator1.id,
-      line1: '654 Operator Blvd',
-      city: 'Gallery City',
-      country: 'Art Country',
-      phone: '+1234567894',
-      isDefault: true,
-    },
-  });
-
-  const operator2Address = await prisma.address.create({
-    data: {
-      userId: operator2.id,
-      line1: '987 Operator Drive',
-      city: 'Fulfillment City',
-      country: 'Art Country',
-      phone: '+1234567895',
-      isDefault: true,
-    },
-  });
-
-  const socialWorker1Address = await prisma.address.create({
-    data: {
-      userId: socialWorker1.id,
-      line1: '147 Social Ave',
-      city: 'Community City',
-      country: 'Social Country',
-      phone: '+1234567896',
-      isDefault: true,
-    },
-  });
-
-  const socialWorker2Address = await prisma.address.create({
-    data: {
-      userId: socialWorker2.id,
-      line1: '258 Social Street',
-      city: 'Outreach City',
-      country: 'Social Country',
-      phone: '+1234567897',
-      isDefault: true,
-    },
-  });
-
-  const customer1Address = await prisma.address.create({
-    data: {
-      userId: customer1.id,
-      line1: '369 Customer Way',
-      city: 'Customer City',
-      country: 'Customer Country',
-      phone: '+1234567898',
-      isDefault: true,
-    },
-  });
-
-  const customer2Address = await prisma.address.create({
-    data: {
-      userId: customer2.id,
-      line1: '741 Customer Drive',
-      city: 'Client City',
-      country: 'Client Country',
-      phone: '+1234567899',
-      isDefault: true,
-    },
-  });
-
-  const service1Address = await prisma.address.create({
-    data: {
-      userId: service1.id,
-      line1: '852 Service Road',
-      city: 'Support City',
-      country: 'Service Country',
-      phone: '+1234567900',
-      isDefault: true,
-    },
-  });
-
-  const service2Address = await prisma.address.create({
-    data: {
-      userId: service2.id,
-      line1: '963 Service Lane',
-      city: 'Technical City',
-      country: 'Service Country',
-      phone: '+1234567901',
-      isDefault: true,
-    },
-  });
-
-  console.log('✅ Addresses created successfully!');
 
   // Display created users
   console.log('\n📋 Created Users:');

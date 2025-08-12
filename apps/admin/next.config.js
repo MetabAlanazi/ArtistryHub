@@ -1,26 +1,36 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["@prisma/client"],
+  },
+  transpilePackages: [
+    "@artistry-hub/ui",
+    "@artistry-hub/auth",
+    "@artistry-hub/utils",
+  ],
   images: {
-    remotePatterns: [
+    domains: ["localhost"],
+  },
+  async headers() {
+    return [
       {
-        protocol: "https",
-        hostname: "picsum.photos",
-        port: "",
-        pathname: "/**",
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
+          },
+        ],
       },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "example.com",
-        port: "",
-        pathname: "/**",
-      },
-    ],
+    ];
   },
 };
 
