@@ -68,6 +68,7 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
+        appName: 'store', // Specify this is for store app
         redirect: false,
       });
 

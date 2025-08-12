@@ -40,7 +40,7 @@
  * ⚠️  Do not modify or update them.
  */
 
-import { prisma, Role } from '@artistry-hub/db'
+import { prisma } from '@artistry-hub/db'
 import bcrypt from 'bcryptjs'
 
 async function hashPassword(password: string): Promise<string> {
@@ -56,12 +56,11 @@ async function main() {
     where: { email: 'admin@artistryhub.com' },
     update: {},
     create: {
-      email: 'admin@artistryhub.com',
-      name: 'System Administrator',
-      hashedPassword: admin1Password,
-      role: 'admin',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'admin@artistryhub.com',
+        name: 'System Administrator',
+        hashedPassword: admin1Password,
+        role: 'admin',
+        status: 'ACTIVE',
     },
   })
 
@@ -70,12 +69,11 @@ async function main() {
     where: { email: 'admin2@artistryhub.com' },
     update: {},
     create: {
-      email: 'admin2@artistryhub.com',
-      name: 'Platform Manager',
-      hashedPassword: admin2Password,
-      role: 'admin',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'admin2@artistryhub.com',
+        name: 'Platform Manager',
+        hashedPassword: admin2Password,
+        role: 'admin',
+        status: 'ACTIVE',
     },
   })
 
@@ -84,12 +82,11 @@ async function main() {
     where: { email: 'artist1@artistryhub.com' },
     update: {},
     create: {
-      email: 'artist1@artistryhub.com',
-      name: 'Creative Artist 1',
-      hashedPassword: artist1Password,
-      role: 'artist',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'artist1@artistryhub.com',
+        name: 'Creative Artist 1',
+        hashedPassword: artist1Password,
+        role: 'artist',
+        status: 'ACTIVE',
     },
   })
 
@@ -98,12 +95,11 @@ async function main() {
     where: { email: 'artist2@artistryhub.com' },
     update: {},
     create: {
-      email: 'artist2@artistryhub.com',
-      name: 'Creative Artist 2',
-      hashedPassword: artist2Password,
-      role: 'artist',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'artist2@artistryhub.com',
+        name: 'Creative Artist 2',
+        hashedPassword: artist2Password,
+        role: 'artist',
+        status: 'ACTIVE',
     },
   })
 
@@ -112,12 +108,11 @@ async function main() {
     where: { email: 'operator1@artistryhub.com' },
     update: {},
     create: {
-      email: 'operator1@artistryhub.com',
-      name: 'Gallery Operator',
-      hashedPassword: operator1Password,
-      role: 'operator',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'operator1@artistryhub.com',
+        name: 'Gallery Operator',
+        hashedPassword: operator1Password,
+        role: 'operator',
+        status: 'ACTIVE',
     },
   })
 
@@ -126,12 +121,11 @@ async function main() {
     where: { email: 'operator2@artistryhub.com' },
     update: {},
     create: {
-      email: 'operator2@artistryhub.com',
-      name: 'Fulfillment Manager',
-      hashedPassword: operator2Password,
-      role: 'operator',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'operator2@artistryhub.com',
+        name: 'Fulfillment Manager',
+        hashedPassword: operator2Password,
+        role: 'operator',
+        status: 'ACTIVE',
     },
   })
 
@@ -140,12 +134,11 @@ async function main() {
     where: { email: 'social1@artistryhub.com' },
     update: {},
     create: {
-      email: 'social1@artistryhub.com',
-      name: 'Community Social Worker',
-      hashedPassword: social1Password,
-      role: 'social_worker',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'social1@artistryhub.com',
+        name: 'Community Social Worker',
+        hashedPassword: social1Password,
+        role: 'social_worker',
+        status: 'ACTIVE',
     },
   })
 
@@ -154,12 +147,11 @@ async function main() {
     where: { email: 'social2@artistryhub.com' },
     update: {},
     create: {
-      email: 'social2@artistryhub.com',
-      name: 'Outreach Coordinator',
-      hashedPassword: social2Password,
-      role: 'social_worker',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'social2@artistryhub.com',
+        name: 'Outreach Coordinator',
+        hashedPassword: social2Password,
+        role: 'social_worker',
+        status: 'ACTIVE',
     },
   })
 
@@ -169,12 +161,11 @@ async function main() {
     where: { email: 'customer1@example.com' },
     update: {},
     create: {
-      email: 'customer1@example.com',
-      name: 'John Doe',
-      hashedPassword: customer1Password,
-      role: 'customer',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'customer1@example.com',
+        name: 'John Doe',
+        hashedPassword: customer1Password,
+        role: 'customer',
+        status: 'ACTIVE',
     },
   })
 
@@ -184,12 +175,11 @@ async function main() {
     where: { email: 'customer2@example.com' },
     update: {},
     create: {
-      email: 'customer2@example.com',
-      name: 'Jane Smith',
-      hashedPassword: customer2Password,
-      role: 'customer',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'customer2@example.com',
+        name: 'Jane Smith',
+        hashedPassword: customer2Password,
+        role: 'customer',
+        status: 'ACTIVE',
     },
   })
 
@@ -198,12 +188,11 @@ async function main() {
     where: { email: 'service1@artistryhub.com' },
     update: {},
     create: {
-      email: 'service1@artistryhub.com',
-      name: 'Support Agent',
-      hashedPassword: service1Password,
-      role: 'service',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'service1@artistryhub.com',
+        name: 'Support Agent',
+        hashedPassword: service1Password,
+        role: 'service',
+        status: 'ACTIVE',
     },
   })
 
@@ -212,12 +201,11 @@ async function main() {
     where: { email: 'service2@artistryhub.com' },
     update: {},
     create: {
-      email: 'service2@artistryhub.com',
-      name: 'Technical Specialist',
-      hashedPassword: service2Password,
-      role: 'service',
-      status: 'ACTIVE',
-      emailVerified: new Date(),
+              email: 'service2@artistryhub.com',
+        name: 'Technical Specialist',
+        hashedPassword: service2Password,
+        role: 'service',
+        status: 'ACTIVE',
     },
   })
 

@@ -8,31 +8,36 @@ const appConfigs = {
     appName: 'store',
     appUrl: process.env.STORE_APP_URL || 'http://localhost:3000',
     loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.STORE_APP_URL + '/auth/login' || 'http://localhost:3000/auth/login',
-    allowRoles: ['customer', 'artist', 'admin', 'operator', 'social_worker', 'service']
+    allowedRoles: ['customer', 'artist', 'admin', 'operator', 'social_worker', 'service'] as UserRole[],
+    sessionTimeout: 15
   },
   admin: {
     appName: 'admin',
     appUrl: process.env.ADMIN_APP_URL || 'http://localhost:3001',
     loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.ADMIN_APP_URL + '/auth/login' || 'http://localhost:3001/auth/login',
-    allowRoles: ['admin']
+    allowedRoles: ['admin'] as UserRole[],
+    sessionTimeout: 15
   },
   artist: {
     appName: 'artist',
     appUrl: process.env.ARTIST_APP_URL || 'http://localhost:3002',
     loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.ARTIST_APP_URL + '/auth/login' || 'http://localhost:3002/auth/login',
-    allowRoles: ['artist', 'admin']
+    allowedRoles: ['artist', 'admin'] as UserRole[],
+    sessionTimeout: 15
   },
   operator: {
     appName: 'operator',
     appUrl: process.env.OPERATOR_APP_URL || 'http://localhost:3003',
     loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.OPERATOR_APP_URL + '/auth/login' || 'http://localhost:3003/auth/login',
-    allowRoles: ['operator', 'admin']
+    allowedRoles: ['operator', 'admin'] as UserRole[],
+    sessionTimeout: 15
   },
   'social-worker': {
     appName: 'social-worker',
     appUrl: process.env.SOCIAL_WORKER_APP_URL || 'http://localhost:3004',
     loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.SOCIAL_WORKER_APP_URL + '/auth/login' || 'http://localhost:3004/auth/login',
-    allowRoles: ['social_worker', 'admin']
+    allowedRoles: ['social_worker', 'admin'] as UserRole[],
+    sessionTimeout: 15
   }
 }
 

@@ -1,5 +1,5 @@
 // Export the singleton Prisma client and types
-export { PrismaClient, Role } from '@prisma/client'
+export { PrismaClient } from '@prisma/client'
 export type * from '@prisma/client'
 
 import { PrismaClient } from '@prisma/client'
