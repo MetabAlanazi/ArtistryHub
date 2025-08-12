@@ -41,16 +41,14 @@
  * 
  * DEPENDENCIES:
  * - @prisma/client: Database ORM
- * - @artistryhub/auth: Password hashing utility
+ * - @artistry-hub/auth: Password hashing utility
  * 
  * ⚠️  WARNING: This script DELETES all existing data and recreates it.
  * ⚠️  Only use in development/testing environments.
  */
 
-import { PrismaClient, Role } from '@prisma/client';
-import { hashPassword } from '@artistryhub/auth';
-
-const prisma = new PrismaClient();
+import { prisma, Role } from '@artistry-hub/db';
+import { hashPassword } from '@artistry-hub/auth';
 
 async function main() {
   console.log('🌱 Starting RBAC database seeding...');

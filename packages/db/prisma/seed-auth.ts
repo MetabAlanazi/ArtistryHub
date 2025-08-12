@@ -47,10 +47,8 @@
  * ⚠️  Do not modify or update them.
  */
 
-import { PrismaClient, Role } from '@prisma/client'
+import { prisma, Role } from '@artistry-hub/db'
 import bcrypt from 'bcryptjs'
-
-const prisma = new PrismaClient()
 
 async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 12)

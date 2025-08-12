@@ -17,9 +17,9 @@ export default function RoleDashboard() {
           title: 'Admin Dashboard',
           description: 'Manage the entire ArtistryHub platform',
           actions: [
-            { label: 'User Management', href: 'http://localhost:3001/users', color: 'bg-red-600' },
-            { label: 'System Settings', href: 'http://localhost:3001/settings', color: 'bg-red-700' },
-            { label: 'Analytics', href: 'http://localhost:3001/analytics', color: 'bg-red-800' }
+            { label: 'User Management', href: (process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001') + '/users', color: 'bg-red-600' },
+            { label: 'System Settings', href: (process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001') + '/settings', color: 'bg-red-700' },
+            { label: 'Analytics', href: (process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001') + '/analytics', color: 'bg-red-800' }
           ],
           icon: '👑',
           color: 'text-red-600'
@@ -29,9 +29,9 @@ export default function RoleDashboard() {
           title: 'Artist Workspace',
           description: 'Manage your artwork and commissions',
           actions: [
-            { label: 'My Artwork', href: 'http://localhost:3002/artwork', color: 'bg-purple-600' },
-            { label: 'Commissions', href: 'http://localhost:3002/commissions', color: 'bg-purple-700' },
-            { label: 'Portfolio', href: 'http://localhost:3002/portfolio', color: 'bg-purple-800' }
+            { label: 'My Artwork', href: (process.env.NEXT_PUBLIC_ARTIST_APP_URL || 'http://localhost:3002') + '/artwork', color: 'bg-purple-600' },
+            { label: 'Commissions', href: (process.env.NEXT_PUBLIC_ARTIST_APP_URL || 'http://localhost:3002') + '/commissions', color: 'bg-purple-700' },
+            { label: 'Portfolio', href: (process.env.NEXT_PUBLIC_ARTIST_APP_URL || 'http://localhost:3002') + '/portfolio', color: 'bg-purple-800' }
           ],
           icon: '🎨',
           color: 'text-purple-600'
@@ -41,9 +41,9 @@ export default function RoleDashboard() {
           title: 'Operator Control Panel',
           description: 'Handle orders and customer support',
           actions: [
-            { label: 'Order Management', href: 'http://localhost:3003/orders', color: 'bg-blue-600' },
-            { label: 'Customer Support', href: 'http://localhost:3003/support', color: 'bg-blue-700' },
-            { label: 'Inventory', href: 'http://localhost:3003/inventory', color: 'bg-blue-800' }
+            { label: 'Order Management', href: (process.env.NEXT_PUBLIC_OPERATOR_APP_URL || 'http://localhost:3003') + '/orders', color: 'bg-blue-600' },
+            { label: 'Customer Support', href: (process.env.NEXT_PUBLIC_OPERATOR_APP_URL || 'http://localhost:3003') + '/support', color: 'bg-blue-700' },
+            { label: 'Inventory', href: (process.env.NEXT_PUBLIC_OPERATOR_APP_URL || 'http://localhost:3003') + '/inventory', color: 'bg-blue-800' }
           ],
           icon: '⚙️',
           color: 'text-blue-600'
@@ -53,9 +53,9 @@ export default function RoleDashboard() {
           title: 'Social Worker Portal',
           description: 'Access community resources and events',
           actions: [
-            { label: 'Community Events', href: 'http://localhost:3004/events', color: 'bg-green-600' },
-            { label: 'Resources', href: 'http://localhost:3004/resources', color: 'bg-green-700' },
-            { label: 'Case Management', href: 'http://localhost:3004/cases', color: 'bg-green-800' }
+            { label: 'Community Events', href: (process.env.NEXT_PUBLIC_SOCIAL_WORKER_APP_URL || 'http://localhost:3004') + '/events', color: 'bg-green-600' },
+            { label: 'Resources', href: (process.env.NEXT_PUBLIC_SOCIAL_WORKER_APP_URL || 'http://localhost:3004') + '/resources', color: 'bg-green-700' },
+            { label: 'Case Management', href: (process.env.NEXT_PUBLIC_SOCIAL_WORKER_APP_URL || 'http://localhost:3004') + '/cases', color: 'bg-green-800' }
           ],
           icon: '🤝',
           color: 'text-green-600'

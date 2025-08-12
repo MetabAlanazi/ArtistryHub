@@ -74,16 +74,17 @@ This app uses the shared `@artistry-hub/auth` package:
 
 For development and testing, use these pre-configured accounts:
 
-| Role | Email | Password | Access |
-|------|-------|----------|---------|
-| **Customer 1** | `customer1@example.com` | `Customer2024!Shop#` | Store only |
-| **Customer 2** | `customer2@example.com` | `Customer2024!Shop#` | Store only |
-| **Artist 1** | `artist1@artistryhub.com` | `Artist2024!Creative#` | Store + Artist |
-| **Artist 2** | `artist2@artistryhub.com` | `Artist2024!Creative#` | Store + Artist |
-| **Admin 1** | `admin@artistryhub.com` | `Admin2024!Secure#` | All apps |
-| **Admin 2** | `admin2@artistryhub.com` | `Admin2024!Secure#` | All apps |
+### **Currently Working Users** (4 users in database)
+
+| Role         | Email                      | Password               | Access           |
+| ------------ | -------------------------- | ---------------------- | ---------------- |
+| **Customer** | `customer@artistryhub.com` | `Customer2024!Shop#`   | Store only       |
+| **Artist**   | `artist@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist   |
+| **Admin**    | `admin@artistryhub.com`    | `Admin2024!Secure#`    | All apps         |
+| **Operator** | `ops@artistryhub.com`      | `Operator2024!Work#`   | Store + Operator |
 
 > ⚠️ **IMPORTANT**: These are test accounts only. Do not modify or use in production.
+> 🚀 **To get additional users**: Run `yarn db:seed` from project root (requires .env file)
 
 ## Testing
 

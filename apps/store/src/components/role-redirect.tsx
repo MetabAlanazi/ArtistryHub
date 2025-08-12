@@ -29,10 +29,10 @@ export default function RoleRedirect({
     if (session?.user?.role && allowedRoles && !allowedRoles.includes(session.user.role)) {
       // Redirect based on role
       const roleRedirects: Record<string, string> = {
-        admin: 'http://localhost:3001',
-        artist: 'http://localhost:3002',
-        operator: 'http://localhost:3003',
-        social_worker: 'http://localhost:3004',
+        admin: process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001',
+        artist: process.env.NEXT_PUBLIC_ARTIST_APP_URL || 'http://localhost:3002',
+        operator: process.env.NEXT_PUBLIC_OPERATOR_APP_URL || 'http://localhost:3003',
+        social_worker: process.env.NEXT_PUBLIC_SOCIAL_WORKER_APP_URL || 'http://localhost:3004',
         customer: redirectTo || '/'
       }
       

@@ -2,62 +2,59 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sessionManager } from './session-manager'
 import type { UserRole, AuthConfig } from './types'
 
-// Configuration for different apps
-const APP_CONFIGS: Record<string, AuthConfig> = {
+// App configurations
+const appConfigs = {
   store: {
     appName: 'store',
     appUrl: process.env.STORE_APP_URL || 'http://localhost:3000',
-    loginUrl: process.env.CENTRAL_LOGIN_URL || 'http://localhost:3000/auth/login',
-    allowedRoles: ['customer', 'artist', 'admin', 'operator', 'social_worker', 'service'],
-    sessionTimeout: 15
+    loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.STORE_APP_URL + '/auth/login' || 'http://localhost:3000/auth/login',
+    allowRoles: ['customer', 'artist', 'admin', 'operator', 'social_worker', 'service']
   },
   admin: {
     appName: 'admin',
     appUrl: process.env.ADMIN_APP_URL || 'http://localhost:3001',
-    loginUrl: process.env.CENTRAL_LOGIN_URL || 'http://localhost:3000/auth/login',
-    allowedRoles: ['admin'],
-    sessionTimeout: 15
+    loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.ADMIN_APP_URL + '/auth/login' || 'http://localhost:3001/auth/login',
+    allowRoles: ['admin']
   },
   artist: {
     appName: 'artist',
     appUrl: process.env.ARTIST_APP_URL || 'http://localhost:3002',
-    loginUrl: process.env.CENTRAL_LOGIN_URL || 'http://localhost:3000/auth/login',
-    allowedRoles: ['artist', 'admin'],
-    sessionTimeout: 15
+    loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.ARTIST_APP_URL + '/auth/login' || 'http://localhost:3002/auth/login',
+    allowRoles: ['artist', 'admin']
   },
   operator: {
     appName: 'operator',
     appUrl: process.env.OPERATOR_APP_URL || 'http://localhost:3003',
-    loginUrl: process.env.CENTRAL_LOGIN_URL || 'http://localhost:3000/auth/login',
-    allowedRoles: ['operator', 'admin'],
-    sessionTimeout: 15
+    loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.OPERATOR_APP_URL + '/auth/login' || 'http://localhost:3003/auth/login',
+    allowRoles: ['operator', 'admin']
   },
   'social-worker': {
     appName: 'social-worker',
     appUrl: process.env.SOCIAL_WORKER_APP_URL || 'http://localhost:3004',
-    loginUrl: process.env.CENTRAL_LOGIN_URL || 'http://localhost:3000/auth/login',
-    allowedRoles: ['social_worker', 'admin'],
-    sessionTimeout: 15
+    loginUrl: process.env.CENTRAL_LOGIN_URL || process.env.SOCIAL_WORKER_APP_URL + '/auth/login' || 'http://localhost:3004/auth/login',
+    allowRoles: ['social_worker', 'admin']
   }
 }
 
 // Get app config from hostname
 function getAppConfig(request: NextRequest): AuthConfig | null {
   const hostname = request.headers.get('host') || ''
-
-  if (hostname.includes('localhost:3000') || hostname.includes('store')) {
-    return APP_CONFIGS.store || null
-  } else if (hostname.includes('localhost:3001') || hostname.includes('admin')) {
-    return APP_CONFIGS.admin || null
-  } else if (hostname.includes('localhost:3002') || hostname.includes('artist')) {
-    return APP_CONFIGS.artist || null
-  } else if (hostname.includes('localhost:3003') || hostname.includes('operator')) {
-    return APP_CONFIGS.operator || null
-  } else if (hostname.includes('localhost:3004') || hostname.includes('social-worker')) {
-    return APP_CONFIGS['social-worker'] || null
+  
+  // Use environment-based detection first
+  if (hostname.includes('store') || hostname.includes('3000')) {
+    return appConfigs.store
+  } else if (hostname.includes('admin') || hostname.includes('3001')) {
+    return appConfigs.admin
+  } else if (hostname.includes('artist') || hostname.includes('3002')) {
+    return appConfigs.artist
+  } else if (hostname.includes('operator') || hostname.includes('3003')) {
+    return appConfigs.operator
+  } else if (hostname.includes('social-worker') || hostname.includes('3004')) {
+    return appConfigs['social-worker']
   }
-
-  return null
+  
+  // Fallback to store app
+  return appConfigs.store
 }
 
 // Extract token from request
@@ -151,4 +148,4 @@ export const customerMiddleware = createRoleMiddleware(['customer', 'artist', 'a
 export const protectedMiddleware = createProtectedMiddleware()
 
 // Export app configs for use in other modules
-export { APP_CONFIGS }
+export { appConfigs }

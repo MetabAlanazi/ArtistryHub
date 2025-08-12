@@ -1,27 +1,36 @@
 import express from 'express'
-import { PrismaClient } from '@artistry-hub/db'
+import { prisma } from '@artistry-hub/db'
 import { authenticateToken, requireRole } from '../middleware/auth'
 import type { AuthenticatedRequest } from '../middleware/auth'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Get user's orders (requires CUSTOMER or ADMIN role)
 router.get('/', authenticateToken, requireRole(['customer', 'admin']), async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user!.id
-    const isAdmin = req.user!.role === 'admin'
+    const isAdmin = req.user!.role === 'ADMIN'
 
     // If admin, they can see all orders, otherwise only their own
     const where = isAdmin ? {} : { userId }
 
     const orders = await prisma.order.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        status: true,
+        totalCents: true,
+        createdAt: true,
+        updatedAt: true,
         items: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            priceCents: true,
             variant: {
-              include: {
+              select: {
+                id: true,
+                name: true,
                 product: {
                   select: {
                     id: true,
@@ -56,18 +65,28 @@ router.get('/:id', authenticateToken, requireRole(['customer', 'admin']), async 
   try {
     const { id } = req.params
     const userId = req.user!.id
-    const isAdmin = req.user!.role === 'admin'
+    const isAdmin = req.user!.role === 'ADMIN'
 
     // If admin, they can see any order, otherwise only their own
     const where = isAdmin ? { id } : { id, userId }
 
     const order = await prisma.order.findUnique({
       where,
-      include: {
+      select: {
+        id: true,
+        status: true,
+        totalCents: true,
+        createdAt: true,
+        updatedAt: true,
         items: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            priceCents: true,
             variant: {
-              include: {
+              select: {
+                id: true,
+                name: true,
                 product: {
                   select: {
                     id: true,

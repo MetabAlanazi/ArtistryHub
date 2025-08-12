@@ -28,19 +28,19 @@ export default function NavbarClient({ user }: { user: MinimalUser | null }) {
     switch (user.role) {
       case 'admin':
         return [
-          { label: 'Admin Panel', href: 'http://localhost:3001', external: true, color: 'text-red-600 hover:text-red-700', icon: '👑' }
+          { label: 'Admin Panel', href: process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001', external: true, color: 'text-red-600 hover:text-red-700', icon: '👑' }
         ]
       case 'artist':
         return [
-          { label: 'Artist Dashboard', href: 'http://localhost:3002', external: true, color: 'text-purple-600 hover:text-purple-700', icon: '🎨' }
+          { label: 'Artist Dashboard', href: process.env.NEXT_PUBLIC_ARTIST_APP_URL || 'http://localhost:3002', external: true, color: 'text-purple-600 hover:text-purple-700', icon: '🎨' }
         ]
       case 'operator':
         return [
-          { label: 'Operator Panel', href: 'http://localhost:3003', external: true, color: 'text-blue-600 hover:text-blue-700', icon: '⚙️' }
+          { label: 'Operator Panel', href: process.env.NEXT_PUBLIC_OPERATOR_APP_URL || 'http://localhost:3003', external: true, color: 'text-blue-600 hover:text-blue-700', icon: '⚙️' }
         ]
       case 'social_worker':
         return [
-          { label: 'Social Worker', href: 'http://localhost:3004', external: true, color: 'text-green-600 hover:text-green-700', icon: '🤝' }
+          { label: 'Social Worker', href: process.env.NEXT_PUBLIC_SOCIAL_WORKER_APP_URL || 'http://localhost:3004', external: true, color: 'text-green-600 hover:text-green-700', icon: '🤝' }
         ]
       default:
         return []

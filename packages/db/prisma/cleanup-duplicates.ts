@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@artistry-hub/db'
 
 async function main() {
   console.log('🧹 Cleaning up duplicate users...')

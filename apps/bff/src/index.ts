@@ -31,12 +31,12 @@ app.use(helmet({
 // CORS configuration
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://localhost:3003',
-    'http://localhost:3004',
-    'http://localhost:3005'
+    process.env.STORE_APP_URL || 'http://localhost:3000',
+    process.env.ADMIN_APP_URL || 'http://localhost:3001',
+    process.env.ARTIST_APP_URL || 'http://localhost:3002',
+    process.env.OPERATOR_APP_URL || 'http://localhost:3003',
+    process.env.SOCIAL_WORKER_APP_URL || 'http://localhost:3004',
+    process.env.BFF_URL || 'http://localhost:3005'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
@@ -70,7 +70,7 @@ app.get('/health', (req, res) => {
   })
 })
 
-// API routes with versioning
+// API routes
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/users', userRoutes)
 app.use('/api/v1/products', productRoutes)
@@ -79,18 +79,22 @@ app.use('/api/v1/wishlist', wishlistRoutes)
 app.use('/api/v1/admin', adminRoutes)
 
 // Global error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Global error handler:', err)
   
-  const statusCode = err.statusCode || 500
-  const message = err.message || 'Internal server error'
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid JSON payload',
+      code: 'INVALID_JSON'
+    })
+  }
   
-  // Don't expose internal errors in production
-  const error = process.env.NODE_ENV === 'production' 
-    ? { error: 'Internal server error', code: 'INTERNAL_ERROR' }
-    : { error: message, code: err.code || 'INTERNAL_ERROR', stack: err.stack }
-  
-  res.status(statusCode).json(error)
+  res.status(500).json({
+    success: false,
+    error: 'Internal server error',
+    code: 'INTERNAL_ERROR'
+  })
 })
 
 // 404 handler
@@ -107,6 +111,7 @@ app.listen(PORT, () => {
   console.log(`🚀 BFF server running on port ${PORT}`)
   console.log(`📊 Health check: http://localhost:${PORT}/health`)
   console.log(`🔐 API base: http://localhost:${PORT}/api/v1`)
+  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`)
 })
 
 export default app

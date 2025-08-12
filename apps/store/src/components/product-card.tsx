@@ -1,20 +1,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
-
-// Simple SAR formatting function
-function formatSAR(cents: number): string {
-  return `SAR ${(cents / 100).toFixed(2)}`
-}
+import { formatSAR } from '@artistry-hub/utils'
 
 interface ProductCardProps {
   product: {
     id: string
     title: string
-    description?: string
-    images: string[]
-    artistRef: {
+    description: string
+    images: string[] | null
+    artistRef?: {
       displayName: string
-    } | null
+    }
     variants: {
       priceCents: number
     }[]
@@ -24,18 +20,33 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const mainVariant = product.variants[0]
   const isInStock = true // Mock - always in stock for demo
+  const hasValidImage = product.images && Array.isArray(product.images) && product.images[0]
 
   return (
     <Link href={`/products/${product.id}`} className="group">
       <div className="card overflow-hidden hover:shadow-lg transition-shadow">
         <div className="relative h-48 bg-gray-200">
-          {product.images && Array.isArray(product.images) && product.images[0] && (
+          {hasValidImage ? (
             <Image
               src={product.images[0]}
               alt={product.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform"
+              onError={(e) => {
+                // Fallback to placeholder on error
+                const target = e.target as HTMLImageElement
+                target.src = `/api/placeholder/400/300/${product.id}`
+              }}
+            />
+          ) : (
+            // Fallback placeholder when no image
+            <Image
+              src={`/api/placeholder/400/300/${product.id}`}
+              alt={`${product.title} placeholder`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover"
             />
           )}
           {!isInStock && (

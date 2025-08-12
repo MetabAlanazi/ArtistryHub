@@ -13,9 +13,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     ...baseAuthOptions.callbacks,
     async signIn({ user, account, profile, email, credentials }) {
-      // Additional admin-specific validation
+      // Additional admin-specific validation with type safety
       if (user && credentials && typeof credentials === 'object' && 'appName' in credentials) {
-        const appName = (credentials as any).appName
+        const appName = credentials.appName as string
         return appName === 'admin' // Only allow admin app access
       }
       return true

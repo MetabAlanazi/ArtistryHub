@@ -181,7 +181,7 @@ function LoginForm() {
 
             <div className="text-center">
               <Link
-                href="http://localhost:3000/store"
+                href={process.env.NEXT_PUBLIC_STORE_APP_URL + '/store' || 'http://localhost:3000/store'}
                 className="text-sm text-indigo-600 hover:text-indigo-500"
               >
                 ← Back to Main Store

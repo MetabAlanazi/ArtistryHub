@@ -1,10 +1,9 @@
 import express from 'express'
-import { PrismaClient } from '@artistry-hub/db'
+import { prisma } from '@artistry-hub/db'
 import { authenticateToken } from '../middleware/auth'
 import type { AuthenticatedRequest } from '../middleware/auth'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Get current user profile (requires authentication)
 router.get('/profile', authenticateToken, async (req: AuthenticatedRequest, res) => {

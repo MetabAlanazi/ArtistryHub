@@ -1,12 +1,11 @@
 import express from 'express'
 import { z } from 'zod'
-import { PrismaClient } from '@artistry-hub/db'
+import { prisma } from '@artistry-hub/db'
 import { hashPassword, verifyPassword } from '@artistry-hub/auth'
 import { authenticateToken, requireRole } from '../middleware/auth'
 import type { AuthenticatedRequest } from '../middleware/auth'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Validation schemas
 const loginSchema = z.object({
@@ -51,8 +50,7 @@ router.post('/login', async (req, res) => {
         name: true,
         hashedPassword: true,
         role: true,
-        status: true,
-        mustReauthAt: true
+        status: true
       }
     })
 
@@ -83,22 +81,21 @@ router.post('/login', async (req, res) => {
     }
 
     // Check if re-authentication is required
-    if (user.mustReauthAt && new Date() > user.mustReauthAt) {
-      return res.status(403).json({
-        success: false,
-        error: 'Re-authentication required',
-        code: 'REAUTH_REQUIRED'
-      })
-    }
+    // Note: mustReauthAt field doesn't exist in current schema
+    // if (user.mustReauthAt && new Date() > user.mustReauthAt) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     error: 'Re-authentication required',
+    //     code: 'REAUTH_REQUIRED'
+    //   })
+    // }
 
-    // Create audit log
-    await prisma.auditLog.create({
+    // Create audit log - using security_audit_logs instead of auditLog
+    await prisma.securityAuditLog.create({
       data: {
-        action: 'LOGIN_SUCCESS',
-        entity: 'USER',
-        entityId: user.id,
-        actorUserId: user.id,
-        meta: { email: user.email, role: user.role }
+        event: 'LOGIN_SUCCESS',
+        userId: user.id,
+        details: JSON.stringify({ email: user.email, role: user.role })
       }
     })
 
@@ -169,14 +166,12 @@ router.post('/register', async (req, res) => {
       }
     })
 
-    // Create audit log
-    await prisma.auditLog.create({
+    // Create audit log - using security_audit_logs instead of auditLog
+    await prisma.securityAuditLog.create({
       data: {
-        action: 'USER_CREATED',
-        entity: 'USER',
-        entityId: user.id,
-        actorUserId: user.id,
-        meta: { email: user.email, role: user.role }
+        event: 'USER_CREATED',
+        userId: user.id,
+        details: JSON.stringify({ email: user.email, role: user.role })
       }
     })
 
@@ -253,20 +248,18 @@ router.post('/reauth', authenticateToken, async (req: AuthenticatedRequest, res)
       // This would check against TwoFactorSecret table
     }
 
-    // Update user's reauth timestamp
-    await prisma.user.update({
-      where: { id: userId },
-      data: { mustReauthAt: new Date(Date.now() + 24 * 60 * 60 * 1000) } // 24 hours
-    })
+    // Update user's reauth timestamp - field doesn't exist in current schema
+    // await prisma.user.update({
+    //   where: { id: userId },
+    //   data: { mustReauthAt: new Date(Date.now() + 24 * 60 * 60 * 1000) } // 24 hours
+    // })
 
-    // Create audit log
-    await prisma.auditLog.create({
+    // Create audit log - using security_audit_logs instead of auditLog
+    await prisma.securityAuditLog.create({
       data: {
-        action: 'REAUTH_SUCCESS',
-        entity: 'USER',
-        entityId: userId,
-        actorUserId: userId,
-        meta: { email: user.email! }
+        event: 'REAUTH_SUCCESS',
+        userId: userId,
+        details: JSON.stringify({ email: user.email! })
       }
     })
 
@@ -289,13 +282,12 @@ router.post('/logout', authenticateToken, async (req: AuthenticatedRequest, res)
   try {
     const userId = req.user!.id
 
-    // Create audit log
-    await prisma.auditLog.create({
+    // Create audit log - using security_audit_logs instead of auditLog
+    await prisma.securityAuditLog.create({
       data: {
-        action: 'LOGOUT',
-        entity: 'USER',
-        entityId: userId,
-        actorUserId: userId
+        event: 'LOGOUT',
+        userId: userId,
+        details: JSON.stringify({ action: 'logout' })
       }
     })
 

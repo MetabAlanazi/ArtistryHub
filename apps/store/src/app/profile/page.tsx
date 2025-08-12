@@ -18,7 +18,7 @@ export default async function ProfilePage() {
           {
             title: 'Admin Panel',
             description: 'Manage users, products, and system settings',
-            href: 'http://localhost:3001',
+            href: process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001',
             color: 'bg-red-600 hover:bg-red-700',
             icon: '👑'
           }
@@ -28,7 +28,7 @@ export default async function ProfilePage() {
           {
             title: 'Artist Dashboard',
             description: 'Manage your artwork and commissions',
-            href: 'http://localhost:3002',
+            href: process.env.NEXT_PUBLIC_ARTIST_APP_URL || 'http://localhost:3002',
             color: 'bg-purple-600 hover:bg-purple-700',
             icon: '🎨'
           }
@@ -38,7 +38,7 @@ export default async function ProfilePage() {
           {
             title: 'Operator Panel',
             description: 'Handle orders and customer support',
-            href: 'http://localhost:3003',
+            href: process.env.NEXT_PUBLIC_OPERATOR_APP_URL || 'http://localhost:3003',
             color: 'bg-blue-600 hover:bg-blue-700',
             icon: '⚙️'
           }
@@ -48,7 +48,7 @@ export default async function ProfilePage() {
           {
             title: 'Social Worker Portal',
             description: 'Access community resources and events',
-            href: 'http://localhost:3004',
+            href: process.env.NEXT_PUBLIC_SOCIAL_WORKER_APP_URL || 'http://localhost:3004',
             color: 'bg-green-600 hover:bg-green-700',
             icon: '🤝'
           }

@@ -1,10 +1,9 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
+import { authOptions } from '@/lib/auth'
 import { Loader2, Search, Plus, Edit, Trash2 } from 'lucide-react'
 import { Button } from '@artistry-hub/ui'
+import { prisma } from '@artistry-hub/db'
 
 // Define UserRole locally
 type UserRole = 'customer' | 'artist' | 'admin' | 'operator' | 'service' | 'social_worker'
@@ -16,99 +15,70 @@ interface User {
   role: UserRole
   status: string
   createdAt: string
+  updatedAt: string
 }
 
-export default function UsersPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
+async function getUsers(): Promise<User[]> {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true
+      },
+      orderBy: { createdAt: 'desc' }
+    })
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/auth/login?redirect=/users')
-    }
-  }, [status, router])
+    return users.map(user => ({
+      ...user,
+      createdAt: user.createdAt.toLocaleDateString(),
+      updatedAt: user.updatedAt.toLocaleDateString()
+    }))
+  } catch (error) {
+    console.error('Failed to fetch users:', error)
+    throw new Error('Failed to fetch users')
+  }
+}
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      // Mock data for now
-      const mockUsers: User[] = [
-        {
-          id: '1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          role: 'customer',
-          status: 'ACTIVE',
-          createdAt: '2024-01-15',
-        },
-        {
-          id: '2',
-          name: 'Jane Smith',
-          email: 'jane@example.com',
-          role: 'artist',
-          status: 'ACTIVE',
-          createdAt: '2024-01-10',
-        },
-        {
-          id: '3',
-          name: 'Admin User',
-          email: 'admin@artistryhub.com',
-          role: 'admin',
-          status: 'ACTIVE',
-          createdAt: '2024-01-01',
-        },
-        {
-          id: '4',
-          name: 'Bob Wilson',
-          email: 'bob@example.com',
-          role: 'operator',
-          status: 'ACTIVE',
-          createdAt: '2024-01-20',
-        },
-      ]
+export default async function UsersPage() {
+  const session = await getServerSession(authOptions)
 
-      setUsers(mockUsers)
-      setLoading(false)
-    }
-  }, [status])
-
-  // Show loading while checking authentication
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+  if (!session) {
+    redirect('/auth/login?redirect=/users')
   }
 
-  // Redirect to login if not authenticated
-  if (status === 'unauthenticated') {
-    return null
+  if (session.user.role !== 'ADMIN') {
+    redirect('/dashboard')
   }
 
-  if (loading) {
+  let users: User[] = []
+  let error: string | null = null
+
+  try {
+    users = await getUsers()
+  } catch (err) {
+    error = err instanceof Error ? err.message : 'Failed to fetch users'
+  }
+
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
-            <p className="mt-4 text-gray-600">Loading users...</p>
+            <div className="text-red-600 text-xl font-semibold mb-4">Error Loading Users</div>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
           </div>
         </div>
       </div>
     )
   }
-
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchTerm.toLowerCase())
-  )
 
   const getRoleBadgeColor = (role: UserRole) => {
     switch (role) {
@@ -150,8 +120,6 @@ export default function UsersPage() {
             <input
               type="text"
               placeholder="Search users by name, email, or role..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
@@ -160,7 +128,7 @@ export default function UsersPage() {
         {/* Users Table */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">All Users ({filteredUsers.length})</h2>
+            <h2 className="text-lg font-medium text-gray-900">All Users ({users.length})</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -184,7 +152,7 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
+                {users.map((user) => (
                   <tr key={user.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>

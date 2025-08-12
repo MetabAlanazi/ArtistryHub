@@ -54,14 +54,14 @@ The schema includes comprehensive models for:
 
 Creates complete test environment with 12 users:
 
-| Role | Count | Password Pattern |
-|------|-------|------------------|
-| **Admin** | 2 | `Admin2024!Secure#` |
-| **Artist** | 2 | `Artist2024!Creative#` |
-| **Operator** | 2 | `Operator2024!Work#` |
-| **Social Worker** | 2 | `Social2024!Help#` |
-| **Customer** | 2 | `Customer2024!Shop#` |
-| **Service** | 2 | `Service2024!Support#` |
+| Role              | Count | Password Pattern       |
+| ----------------- | ----- | ---------------------- |
+| **Admin**         | 2     | `Admin2024!Secure#`    |
+| **Artist**        | 2     | `Artist2024!Creative#` |
+| **Operator**      | 2     | `Operator2024!Work#`   |
+| **Social Worker** | 2     | `Social2024!Help#`     |
+| **Customer**      | 2     | `Customer2024!Shop#`   |
+| **Service**       | 2     | `Service2024!Support#` |
 
 ### README Users (`yarn db:seed:readme`)
 
@@ -72,6 +72,15 @@ Creates only the users documented in the README:
 - **Email**: `operator1@artistryhub.com` / **Password**: `Operator2024!Work#`
 - **Email**: `social1@artistryhub.com` / **Password**: `Social2024!Help#`
 - **Email**: `customer1@example.com` / **Password**: `Customer2024!Shop#`
+
+### Authentication Users (`yarn seed:auth`)
+
+Creates the current 4 users in the database:
+
+- **Email**: `admin@artistryhub.com` / **Password**: `Admin2024!Secure#`
+- **Email**: `ops@artistryhub.com` / **Password**: `Operator2024!Work#`
+- **Email**: `artist@artistryhub.com` / **Password**: `Artist2024!Creative#`
+- **Email**: `customer@artistryhub.com` / **Password**: `Customer2024!Shop#`
 
 ### Authentication Testing (`yarn seed:auth`)
 
@@ -172,11 +181,13 @@ SHADOW_DATABASE_URL="mysql://user:password@localhost:3306/artistry_hub_shadow"
 ### Common Issues
 
 1. **Prisma Client Not Generated**
+
    ```bash
    yarn db:generate
    ```
 
 2. **Migration Errors**
+
    ```bash
    yarn db:reset
    yarn db:migrate

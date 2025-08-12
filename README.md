@@ -25,32 +25,32 @@ yarn dev
 
 ## 🔑 **CREDENTIALS & ACCESS** (DO NOT CHANGE)
 
-### **Default Test Users** (Pre-configured in database)
+> ✅ **READY TO TEST**: The users below are currently working in your database.
+
+### **Current Test Users** (Active in Database - 4 Users)
 
 > ⚠️ **IMPORTANT**: These credentials are for testing only. Do not modify or update them.
 
-| Role                | Email                       | Password               | Access                             |
-| ------------------- | --------------------------- | ---------------------- | ---------------------------------- |
-| **Admin 1**         | `admin@artistryhub.com`     | `Admin2024!Secure#`    | All apps (3000-3004)               |
-| **Admin 2**         | `admin2@artistryhub.com`    | `Admin2024!Secure#`    | All apps (3000-3004)               |
-| **Artist 1**        | `artist1@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)        |
-| **Artist 2**        | `artist2@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)        |
-| **Operator 1**      | `operator1@artistryhub.com` | `Operator2024!Work#`   | Store + Operator (3000, 3003)      |
-| **Operator 2**      | `operator2@artistryhub.com` | `Operator2024!Work#`   | Store + Operator (3000, 3003)      |
-| **Social Worker 1** | `social1@artistryhub.com`   | `Social2024!Help#`     | Store + Social Worker (3000, 3004) |
-| **Social Worker 2** | `social2@artistryhub.com`   | `Social2024!Help#`     | Store + Social Worker (3000, 3004) |
-| **Customer 1**      | `customer1@example.com`     | `Customer2024!Shop#`   | Store only (3000)                  |
-| **Customer 2**      | `customer2@example.com`     | `Customer2024!Shop#`   | Store only (3000)                  |
-| **Service 1**       | `service1@artistryhub.com`  | `Service2024!Support#` | Store + Service (3000)             |
-| **Service 2**       | `service2@artistryhub.com`  | `Service2024!Support#` | Store + Service (3000)             |
+| Role         | Email                      | Password               | Access                        |
+| ------------ | -------------------------- | ---------------------- | ----------------------------- |
+| **Admin**    | `admin@artistryhub.com`    | `Admin2024!Secure#`    | All apps (3000-3004)          |
+| **Operator** | `ops@artistryhub.com`      | `Operator2024!Work#`   | Store + Operator (3000, 3003) |
+| **Artist**   | `artist@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)   |
+| **Customer** | `customer@artistryhub.com` | `Customer2024!Shop#`   | Store only (3000)             |
 
-> ✅ **VERIFIED**: All test users in the database now match the README exactly. Use `yarn db:seed:readme` to seed only the README users, or `yarn db:seed` for the full database with additional sample data.
-> 🔒 **SECURE**: All passwords now use strong, unique combinations with uppercase, lowercase, numbers, and special characters.
+> ✅ **VERIFIED**: These are the actual users currently in the database. All passwords use strong, unique combinations with uppercase, lowercase, numbers, and special characters.
+> 🔒 **SECURE**: All passwords are securely hashed and ready for testing.
+
+### **Getting More Users** (Optional)
+
+> 🚀 **To get additional users, run**: `yarn db:seed` (requires .env file)
+
+This will create additional test users with different email patterns for comprehensive testing.
 
 ### **App URLs & Navigation**
 
 - **Main Store**: `http://localhost:3000/store` (redirects from `http://localhost:3000`)
-- **Admin Panel**: `http://localhost:3001` (Admin role only)
+- **Admin Panel**: `http://localhost:3002` (Admin role only)
 - **Artist Dashboard**: `http://localhost:3002` (Artist role only)
 - **Operator Panel**: `http://localhost:3003` (Operator role only)
 - **Social Worker Portal**: `http://localhost:3004` (Social Worker role only)
@@ -59,14 +59,12 @@ yarn dev
 
 > 🎯 **Role-Based Auto-Redirect**: After login, users are automatically redirected to their appropriate app based on their role.
 
-| Role              | Login Redirect              | Purpose                  |
-| ----------------- | --------------------------- | ------------------------ |
-| **Admin**         | Admin Portal (3001)         | System administration    |
-| **Artist**        | Artist Portal (3002)        | Art creation & portfolio |
-| **Operator**      | Operator Portal (3003)      | Order fulfillment        |
-| **Social Worker** | Social Worker Portal (3004) | Community outreach       |
-| **Customer**      | Main Store (3000)           | Shopping & orders        |
-| **Service**       | Main Store (3000)           | Support & assistance     |
+| Role         | Login Redirect         | Purpose                  |
+| ------------ | ---------------------- | ------------------------ |
+| **Admin**    | Admin Portal (3002)    | System administration    |
+| **Artist**   | Artist Portal (3002)   | Art creation & portfolio |
+| **Operator** | Operator Portal (3003) | Order fulfillment        |
+| **Customer** | Main Store (3000)      | Shopping & orders        |
 
 ### **Logout Behavior**
 
@@ -85,8 +83,9 @@ yarn workspace @artistry-hub/artist dev
 yarn workspace @artistry-hub/operator dev
 
 # Database operations
-yarn db:seed          # Seed full database with sample data
+yarn db:seed          # Seed full database with 12 users (requires .env)
 yarn db:seed:readme   # Seed only README test users
+yarn db:seed:auth     # Seed authentication users (current 4 users)
 yarn db:reset         # Reset database and run migrations
 yarn db:studio        # Open Prisma Studio
 
@@ -99,6 +98,17 @@ yarn typecheck
 # Linting
 yarn lint
 ```
+
+### **Getting More Users** (Optional)
+
+To get additional test users:
+
+1. **Create .env file** in root directory with database connection
+2. **Run seeding**: `yarn db:seed`
+3. **Verify users**: Check database or use `yarn db:studio`
+
+**Current state**: 4 users (Admin, Operator, Artist, Customer)  
+**Additional users**: Will be created with different email patterns
 
 ## 🔐 **Authentication Architecture**
 

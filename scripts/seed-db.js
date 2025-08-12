@@ -37,10 +37,8 @@
  * ⚠️  Do not modify or update them.
  */
 
-const { PrismaClient } = require("@prisma/client");
+const { prisma } = require("@artistry-hub/db");
 const bcrypt = require("bcryptjs");
-
-const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Starting database seeding...");

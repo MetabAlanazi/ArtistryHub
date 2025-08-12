@@ -1,15 +1,13 @@
 import express from 'express'
 import { z } from 'zod'
-import { PrismaClient } from '@artistry-hub/db'
+import { prisma } from '@artistry-hub/db'
 import { authenticateToken, requireRole, requireRecentAuth } from '../middleware/auth'
 import type { AuthenticatedRequest } from '../middleware/auth'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Validation schemas
 const updateUserRoleSchema = z.object({
-  userId: z.string().min(1, 'User ID is required'),
   newRole: z.enum(['customer', 'artist', 'admin', 'operator', 'service', 'social_worker']),
 })
 
@@ -100,24 +98,24 @@ router.patch('/users/:userId/role',
         }
       })
 
-      // Create audit log
-      await prisma.auditLog.create({
+      // Create audit log - using security_audit_logs instead of auditLog
+      await prisma.securityAuditLog.create({
         data: {
-          action: 'USER_ROLE_CHANGED',
-          entity: 'USER',
-          entityId: userId,
-          actorUserId: adminUserId,
-          meta: { 
+          event: 'USER_ROLE_CHANGED',
+          userId: adminUserId,
+          details: JSON.stringify({ 
             oldRole: user.role, 
             newRole, 
-            userEmail: user.email 
-          }
+            userEmail: user.email,
+            targetUserId: userId
+          })
         }
       })
 
       res.json({
         success: true,
-        user: updatedUser
+        user: updatedUser,
+        message: 'User role updated successfully'
       })
     } catch (error) {
       console.error('Update user role error:', error)
@@ -173,22 +171,22 @@ router.get('/stats', authenticateToken, requireRole(['admin']), async (req: Auth
 // Get audit logs (ADMIN only)
 router.get('/audit-logs', authenticateToken, requireRole(['admin']), async (req: AuthenticatedRequest, res) => {
   try {
-    const { page = 1, limit = 50, action, userId } = req.query
+    const { page = 1, limit = 50, event, userId } = req.query
 
-    const where: any = {}
-    if (action) where.action = action
-    if (userId) where.actorUserId = userId
+    const where: { event?: string; userId?: string } = {}
+    if (event) where.event = event as string
+    if (userId) where.userId = userId as string
 
     const skip = (Number(page) - 1) * Number(limit)
 
     const [logs, total] = await Promise.all([
-      prisma.auditLog.findMany({
+      prisma.securityAuditLog.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { timestamp: 'desc' },
         skip,
         take: Number(limit)
       }),
-      prisma.auditLog.count({ where })
+      prisma.securityAuditLog.count({ where })
     ])
 
     res.json({
@@ -210,5 +208,121 @@ router.get('/audit-logs', authenticateToken, requireRole(['admin']), async (req:
     })
   }
 })
+
+// Get user details (ADMIN only)
+router.get('/users/:userId', authenticateToken, requireRole(['admin']), async (req: AuthenticatedRequest, res) => {
+  try {
+    const { userId } = req.params
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        lastLoginAt: true
+      }
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        code: 'USER_NOT_FOUND'
+      })
+    }
+
+    res.json({
+      success: true,
+      user
+    })
+  } catch (error) {
+    console.error('Get user details error:', error)
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR'
+    })
+  }
+})
+
+// Deactivate user (ADMIN only)
+router.patch('/users/:userId/deactivate', 
+  authenticateToken, 
+  requireRole(['admin']), 
+  requireRecentAuth(10), // 10 minutes
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const { userId } = req.params
+      const adminUserId = req.user!.id
+
+      // Check if user exists
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true, role: true, status: true }
+      })
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: 'User not found',
+          code: 'USER_NOT_FOUND'
+        })
+      }
+
+      // Prevent admin from deactivating themselves
+      if (userId === adminUserId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Cannot deactivate your own account',
+          code: 'INVALID_OPERATION'
+        })
+      }
+
+      // Update user status
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { status: 'INACTIVE' },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          status: true,
+          updatedAt: true
+        }
+      })
+
+      // Create audit log
+      await prisma.securityAuditLog.create({
+        data: {
+          event: 'USER_DEACTIVATED',
+          userId: adminUserId,
+          details: JSON.stringify({ 
+            targetUserId: userId,
+            targetUserEmail: user.email,
+            targetUserRole: user.role
+          })
+        }
+      })
+
+      res.json({
+        success: true,
+        user: updatedUser,
+        message: 'User deactivated successfully'
+      })
+    } catch (error) {
+      console.error('Deactivate user error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        code: 'INTERNAL_ERROR'
+      })
+    }
+  }
+)
 
 export default router

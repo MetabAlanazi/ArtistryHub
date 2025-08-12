@@ -1,8 +1,7 @@
 import express from 'express'
-import { PrismaClient } from '@artistry-hub/db'
+import { prisma } from '@artistry-hub/db'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Get all published products (public - no authentication required)
 router.get('/', async (req, res) => {
@@ -10,8 +9,8 @@ router.get('/', async (req, res) => {
     const { page = 1, limit = 20, category, search } = req.query
     const skip = (Number(page) - 1) * Number(limit)
 
-    const where: any = { status: 'PUBLISHED' }
-    if (category) where.category = category
+    const where: { status: string; category?: string; OR?: Array<{ title?: { contains: string; mode: string }; description?: { contains: string; mode: string } }> } = { status: 'PUBLISHED' }
+    if (category) where.category = category as string
     if (search) {
       where.OR = [
         { title: { contains: search as string, mode: 'insensitive' } },
@@ -72,7 +71,13 @@ router.get('/:id', async (req, res) => {
 
     const product = await prisma.product.findUnique({
       where: { id, status: 'PUBLISHED' },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        type: true,
+        status: true,
+        images: true,
         variants: {
           select: {
             id: true,

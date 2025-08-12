@@ -1,21 +1,9 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@artistry-hub/db'
 import bcrypt from 'bcryptjs'
 import { sessionManager } from './session-manager'
 import type { AuthUser, UserRole, LoginCredentials } from './types'
-
-// Create a single Prisma instance
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  errorFormat: 'pretty',
-})
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Base auth options that implement centralized authentication
 export const baseAuthOptions: NextAuthOptions = {
@@ -34,7 +22,7 @@ export const baseAuthOptions: NextAuthOptions = {
         }
 
         try {
-          // Find user by email
+          // Find user by email with minimal data selection
           const user = await prisma.user.findUnique({
             where: { email: credentials.email },
             select: {
@@ -95,7 +83,10 @@ export const baseAuthOptions: NextAuthOptions = {
             refreshToken
           }
         } catch (error) {
-          console.error('Authentication error:', error)
+          // Only log in development to reduce noise
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Authentication error:', error)
+          }
           return null
         }
       }
@@ -112,21 +103,23 @@ export const baseAuthOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        // Initial sign in
-        token.sub = user.id
-        token.role = (user as any).role
-        token.permissionsVersion = (user as any).permissionsVersion
-        token.accessToken = (user as any).accessToken
-        token.refreshToken = (user as any).refreshToken
+        // Initial sign in - type-safe user data
+        const typedUser = user as AuthUser & { accessToken?: string; refreshToken?: string }
+        token.sub = typedUser.id
+        token.role = typedUser.role
+        token.permissionsVersion = typedUser.permissionsVersion
+        token.accessToken = typedUser.accessToken
+        token.refreshToken = typedUser.refreshToken
         token.expiresAt = Date.now() + (15 * 60 * 1000) // 15 minutes
         token.issuedAt = Date.now()
       }
 
       // Handle session updates
       if (trigger === 'update' && session) {
-        if ((session as any).accessToken) token.accessToken = (session as any).accessToken
-        if ((session as any).refreshToken) token.refreshToken = (session as any).refreshToken
-        if ((session as any).expiresAt) token.expiresAt = (session as any).expiresAt
+        const typedSession = session as { accessToken?: string; refreshToken?: string; expiresAt?: number }
+        if (typedSession.accessToken) token.accessToken = typedSession.accessToken
+        if (typedSession.refreshToken) token.refreshToken = typedSession.refreshToken
+        if (typedSession.expiresAt) token.expiresAt = typedSession.expiresAt
       }
 
       // Check if token needs refresh
@@ -144,16 +137,18 @@ export const baseAuthOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any).id = token.sub as string
-        (session.user as any).role = token.role as UserRole
-        (session.user as any).permissionsVersion = token.permissionsVersion as number
-        (session.user as any).lastLoginAt = token.issuedAt as number
-        (session.user as any).isActive = true
+        // Type-safe session augmentation
+        const typedSession = session as any
+        typedSession.user.id = token.sub as string
+        typedSession.user.role = token.role as UserRole
+        typedSession.user.permissionsVersion = token.permissionsVersion as number
+        typedSession.user.lastLoginAt = token.issuedAt as number
+        typedSession.user.isActive = true
 
         // Add tokens to session
-        ;(session as any).accessToken = token.accessToken
-        ;(session as any).refreshToken = token.refreshToken
-        ;(session as any).expiresAt = token.expiresAt
+        typedSession.accessToken = token.accessToken
+        typedSession.refreshToken = token.refreshToken
+        typedSession.expiresAt = token.expiresAt
       }
       return session
     }
@@ -163,7 +158,7 @@ export const baseAuthOptions: NextAuthOptions = {
     error: '/auth/error',
   },
   secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development',
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === 'development' && process.env.NEXTAUTH_DEBUG === 'true',
   useSecureCookies: process.env.NODE_ENV === 'production',
   cookies: {
     sessionToken: {

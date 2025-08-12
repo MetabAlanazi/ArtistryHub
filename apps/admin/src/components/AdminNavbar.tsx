@@ -34,7 +34,7 @@ export default function AdminNavbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: 'http://localhost:3000/store' })
+            await signOut({ callbackUrl: process.env.NEXT_PUBLIC_STORE_APP_URL + '/store' || 'http://localhost:3000/store' })
   }
 
   return (
