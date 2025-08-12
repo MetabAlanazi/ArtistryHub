@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import Navbar from './(components)/Navbar'
+import ArtistNavbar from '@/components/ArtistNavbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ArtistryHub Artist Portal',
-  description: 'Artist portal for ArtistryHub art commerce platform.',
+  title: 'ArtistryHub Artist',
+  description: 'Artist portal for ArtistryHub',
 }
 
 export default function RootLayout({
@@ -20,13 +20,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Navbar />
-          <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+          <ArtistNavbar />
+          {children}
         </Providers>
       </body>
     </html>
   )
 }
-
-
-

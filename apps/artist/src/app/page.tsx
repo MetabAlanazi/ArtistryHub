@@ -1,39 +1,43 @@
-import { Suspense } from 'react'
-import ArtistDashboard from '@/components/artist-dashboard'
-import { getCurrentUser } from '@/lib/auth'
+'use client'
 
-export default async function ArtistHomePage() {
-  const user = await getCurrentUser()
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Greeting Section */}
-      <div className="bg-white border rounded-lg p-6 mb-8">
-        <div className="space-y-3">
-          <h1 className="text-2xl font-bold">
-            Welcome{user?.name ? `, ${user.name}` : ''} 👋
-          </h1>
-          <p className="text-gray-600">
-            {user
-              ? 'You are signed in. Explore your workspace using the navbar.'
-              : 'Please sign in to access your dashboard.'}
-          </p>
+export default function ArtistHomePage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      // User is authenticated, redirect to dashboard
+      router.replace('/dashboard')
+    } else if (status === 'unauthenticated') {
+      // User is not authenticated, redirect to login
+      router.replace('/auth/login')
+    }
+  }, [status, session, router])
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
+    )
+  }
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Artist Dashboard</h1>
-        <p className="mt-2 text-gray-600">
-          Manage your profile, submissions, and commissions
-        </p>
+  // This should not render, but just in case
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+        <p className="mt-4 text-gray-600">Redirecting...</p>
       </div>
-
-      <Suspense fallback={<div>Loading dashboard...</div>}>
-        <ArtistDashboard />
-      </Suspense>
     </div>
   )
 }
-
-
-

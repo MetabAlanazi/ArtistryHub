@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 
-export default function ArtistDashboard() {
+export default function ArtworkPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.replace('/auth/login?redirect=/dashboard')
+      router.replace('/auth/login?redirect=/artwork')
     }
   }, [status, router])
 
@@ -34,14 +34,14 @@ export default function ArtistDashboard() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Artist Dashboard</h1>
-          <p className="mt-2 text-gray-600">Welcome to your artist portal</p>
+          <h1 className="text-3xl font-bold text-gray-900">My Artwork</h1>
+          <p className="mt-2 text-gray-600">Manage your art portfolio</p>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Dashboard Content</h2>
-          <p className="text-gray-600">Artist dashboard functionality coming soon...</p>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">Artwork Management</h2>
+          <p className="text-gray-600">Artwork functionality coming soon...</p>
         </div>
       </div>
     </div>

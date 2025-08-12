@@ -10,13 +10,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
       queries: {
         staleTime: 60 * 1000, // 1 minute
         retry: 1,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+      },
+      mutations: {
+        retry: 1,
       },
     },
   }))
 
   return (
-    <SessionProvider 
-      refetchInterval={0} 
+    <SessionProvider
+      refetchInterval={0}
       refetchOnWindowFocus={false}
       refetchWhenOffline={false}
     >
@@ -26,12 +31,3 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </SessionProvider>
   )
 }
-
-
-
-
-
-
-
-
-
