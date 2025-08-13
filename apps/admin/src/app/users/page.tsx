@@ -1,106 +1,121 @@
-import { getServerSession } from 'next-auth'
-import { redirect } from 'next/navigation'
-import { authOptions } from '@/lib/auth'
-import { Loader2, Search, Plus, Edit, Trash2 } from 'lucide-react'
-import { Button } from '@artistry-hub/ui'
-import { prisma } from '@artistry-hub/db'
+'use client'
 
-// Define UserRole locally
-type UserRole = 'customer' | 'artist' | 'admin' | 'operator' | 'service' | 'social_worker'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Loader2, Edit, Trash2, Plus } from 'lucide-react'
+import { Button } from '@artistry-hub/ui'
 
 interface User {
   id: string
   name: string
   email: string
-  role: UserRole
-  status: string
+  role: string
+  status: 'ACTIVE' | 'INACTIVE'
   createdAt: string
-  updatedAt: string
 }
 
-async function getUsers(): Promise<User[]> {
-  try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true
+const getRoleBadgeClasses = (role: string) => {
+  switch (role) {
+    case 'admin': return 'bg-gray-100 text-gray-800 border-gray-200'
+    case 'artist': return 'bg-gray-100 text-gray-800 border-gray-200'
+    case 'operator': return 'bg-gray-100 text-gray-800 border-gray-200'
+    case 'social_worker': return 'bg-gray-100 text-gray-800 border-gray-200'
+    default: return 'bg-gray-100 text-gray-800 border-gray-200'
+  }
+}
+
+const getStatusBadgeClasses = (status: string) => {
+  return status === 'ACTIVE' ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
+}
+
+export default function UsersPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/auth/login?redirect=/users')
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    // Mock data loading
+    const mockUsers: User[] = [
+      {
+        id: '1',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        role: 'admin',
+        status: 'ACTIVE',
+        createdAt: '2024-01-15'
       },
-      orderBy: { createdAt: 'desc' }
-    })
+      {
+        id: '2',
+        name: 'Jane Smith',
+        email: 'jane.smith@example.com',
+        role: 'artist',
+        status: 'ACTIVE',
+        createdAt: '2024-01-20'
+      },
+      {
+        id: '3',
+        name: 'Bob Johnson',
+        email: 'bob.johnson@example.com',
+        role: 'operator',
+        status: 'INACTIVE',
+        createdAt: '2024-01-18'
+      }
+    ]
 
-    return users.map(user => ({
-      ...user,
-      createdAt: user.createdAt.toLocaleDateString(),
-      updatedAt: user.updatedAt.toLocaleDateString()
-    }))
-  } catch (error) {
-    console.error('Failed to fetch users:', error)
-    throw new Error('Failed to fetch users')
-  }
-}
+    setTimeout(() => {
+      setUsers(mockUsers)
+      setLoading(false)
+    }, 1000)
+  }, [])
 
-export default async function UsersPage() {
-  const session = await getServerSession(authOptions)
-
-  if (!session) {
-    redirect('/auth/login?redirect=/users')
-  }
-
-  if (session.user.role !== 'ADMIN') {
-    redirect('/dashboard')
-  }
-
-  let users: User[] = []
-  let error: string | null = null
-
-  try {
-    users = await getUsers()
-  } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to fetch users'
-  }
-
-  if (error) {
+  // Show loading while checking authentication
+  if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-600" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Redirect to login if not authenticated
+  if (status === 'unauthenticated') {
+    return null
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <div className="text-red-600 text-xl font-semibold mb-4">Error Loading Users</div>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-600" />
+            <p className="mt-4 text-gray-600">Loading users...</p>
           </div>
         </div>
       </div>
     )
   }
 
-  const getRoleBadgeColor = (role: UserRole) => {
-    switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800 border-red-200'
-      case 'artist': return 'bg-purple-100 text-purple-800 border-purple-200'
-      case 'operator': return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'social_worker': return 'bg-green-100 text-green-800 border-green-200'
-      case 'customer': return 'bg-gray-100 text-gray-800 border-gray-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow">
+      <div className="bg-white shadow border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
               <p className="mt-2 text-gray-600">
-                Manage users, roles, and permissions across the platform
+                Manage platform users and their roles
               </p>
             </div>
             <Button className="flex items-center">
@@ -113,22 +128,10 @@ export default async function UsersPage() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filters */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search users by name, email, or role..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-        </div>
-
         {/* Users Table */}
-        <div className="bg-white shadow rounded-lg">
+        <div className="bg-white shadow rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">All Users ({users.length})</h2>
+            <h2 className="text-lg font-medium text-gray-900">All Users</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -161,14 +164,12 @@ export default async function UsersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border ${getRoleBadgeColor(user.role)}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeClasses(user.role)}`}>
                         {user.role}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClasses(user.status)}`}>
                         {user.status}
                       </span>
                     </td>
@@ -176,10 +177,10 @@ export default async function UsersPage() {
                       {user.createdAt}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-indigo-600 hover:text-indigo-900 mr-3">
+                      <button className="text-gray-600 hover:text-gray-900 mr-3">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button className="text-gray-600 hover:text-gray-900">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </td>

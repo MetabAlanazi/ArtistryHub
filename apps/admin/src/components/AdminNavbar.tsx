@@ -38,13 +38,13 @@ export default function AdminNavbar() {
   }
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo and main navigation */}
           <div className="flex items-center">
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">A</span>
               </div>
               <span className="text-xl font-bold text-gray-900">ArtistryHub Admin</span>
@@ -61,7 +61,7 @@ export default function AdminNavbar() {
                     href={item.href}
                     className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                       isActive
-                        ? 'border-indigo-500 text-gray-900'
+                        ? 'border-gray-900 text-gray-900'
                         : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                     }`}
                   >
@@ -80,24 +80,24 @@ export default function AdminNavbar() {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                 >
-                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-indigo-600" />
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-gray-600" />
                   </div>
                   <span className="hidden md:block text-gray-700">{session.user.name || session.user.email}</span>
-                  <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                     {(session.user as any).role || 'User'}
                   </span>
                 </button>
 
                 {/* User dropdown */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border">
-                    <div className="px-4 py-2 border-b">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    <div className="px-4 py-2 border-b border-gray-200">
                       <p className="text-sm font-medium text-gray-900">{session.user.name || 'User'}</p>
                       <p className="text-xs text-gray-500">{session.user.email}</p>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 mt-1">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mt-1">
                         {(session.user as any).role || 'User'}
                       </span>
                     </div>
@@ -141,7 +141,7 @@ export default function AdminNavbar() {
                   href={item.href}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
                     isActive
-                      ? 'bg-indigo-50 text-indigo-700'
+                      ? 'bg-gray-50 text-gray-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
