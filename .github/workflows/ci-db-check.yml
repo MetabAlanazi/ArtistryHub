@@ -1,0 +1,38 @@
+name: Database Configuration Check
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  db-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Database Configuration
+        run: |
+          echo "🔍 Checking database configuration..."
+          
+          # Fail if any .env* contains a DB name other than art_commerce
+          if grep -R "mysql://.*@" .env* 2>/dev/null | grep -v "art_commerce"; then
+            echo "❌ Multiple DB names detected. Use art_commerce only."
+            echo "Found these database URLs:"
+            grep -R "mysql://.*@" .env* 2>/dev/null | grep -v "art_commerce"
+            exit 1
+          fi
+          
+          # Fail if prisma migrate is used
+          if git grep -n "prisma migrate" -- ':!**/migrations_archive/**' 2>/dev/null; then
+            echo "❌ Do not use prisma migrate. Use prisma db pull + prisma generate."
+            echo "Found these references:"
+            git grep -n "prisma migrate" -- ':!**/migrations_archive/**'
+            exit 1
+          fi
+          
+          echo "✅ Database configuration check passed!"
+          echo "✅ All environment files use 'art_commerce' database name"
+          echo "✅ No Prisma migrations found in code"

@@ -4,10 +4,12 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
+import { useHealthCheck } from '@/hooks/useHealthCheck'
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { healthData, loading: healthLoading, getServiceStatus } = useHealthCheck(true, 60000) // Check every minute
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -82,6 +84,86 @@ export default function AdminDashboard() {
             <p className="text-3xl font-bold text-gray-900">890</p>
             <p className="text-gray-600 text-sm">+5% from last month</p>
           </div>
+        </div>
+
+        {/* Health Status Widget */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">System Health</h3>
+          {healthLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              <span className="ml-2 text-sm text-gray-500">Checking services...</span>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${
+                    getServiceStatus('database') === 'healthy' ? 'bg-green-500' : 
+                    getServiceStatus('database') === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                  <div className="text-sm font-medium text-gray-900">Database</div>
+                  <div className={`text-xs ${
+                    getServiceStatus('database') === 'healthy' ? 'text-green-600' : 
+                    getServiceStatus('database') === 'degraded' ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {getServiceStatus('database') === 'healthy' ? 'Healthy' : 
+                     getServiceStatus('database') === 'degraded' ? 'Degraded' : 'Unhealthy'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${
+                    getServiceStatus('bff') === 'healthy' ? 'bg-green-500' : 
+                    getServiceStatus('bff') === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                  <div className="text-sm font-medium text-gray-900">BFF</div>
+                  <div className={`text-xs ${
+                    getServiceStatus('bff') === 'healthy' ? 'text-green-600' : 
+                    getServiceStatus('bff') === 'degraded' ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {getServiceStatus('bff') === 'healthy' ? 'Healthy' : 
+                     getServiceStatus('bff') === 'degraded' ? 'Degraded' : 'Unhealthy'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${
+                    getServiceStatus('minio') === 'healthy' ? 'bg-green-500' : 
+                    getServiceStatus('minio') === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                  <div className="text-sm font-medium text-gray-900">MinIO</div>
+                  <div className={`text-xs ${
+                    getServiceStatus('minio') === 'healthy' ? 'text-green-600' : 
+                    getServiceStatus('minio') === 'degraded' ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {getServiceStatus('minio') === 'healthy' ? 'Healthy' : 
+                     getServiceStatus('minio') === 'degraded' ? 'Degraded' : 'Unhealthy'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${
+                    getServiceStatus('auth') === 'healthy' ? 'bg-green-500' : 
+                    getServiceStatus('auth') === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                  <div className="text-sm font-medium text-gray-900">Auth</div>
+                  <div className={`text-xs ${
+                    getServiceStatus('auth') === 'healthy' ? 'text-green-600' : 
+                    getServiceStatus('auth') === 'degraded' ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {getServiceStatus('auth') === 'healthy' ? 'Healthy' : 
+                     getServiceStatus('auth') === 'degraded' ? 'Degraded' : 'Unhealthy'}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <a 
+                  href="/system/health" 
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  View Detailed Health Dashboard →
+                </a>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Quick Actions */}

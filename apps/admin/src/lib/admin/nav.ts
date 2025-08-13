@@ -1,4 +1,4 @@
-export type AdminSection = "dashboard" | "catalog" | "orders" | "customers" | "analytics" | "settings";
+export type AdminSection = "dashboard" | "catalog" | "orders" | "customers" | "analytics" | "system" | "settings";
 
 export const SUB_NAV: Record<AdminSection, { key: string; label: string; href: string; roles?: string[] }[]> = {
   catalog: [
@@ -17,6 +17,11 @@ export const SUB_NAV: Record<AdminSection, { key: string; label: string; href: s
   dashboard: [],
   customers: [],
   analytics: [],
+  system: [
+    { key: "health", label: "System Health", href: "/system/health" },
+    { key: "logs", label: "System Logs", href: "/system/logs" },
+    { key: "performance", label: "Performance", href: "/system/performance" },
+  ],
   settings: [],
 };
 

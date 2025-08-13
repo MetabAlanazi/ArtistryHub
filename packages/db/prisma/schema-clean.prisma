@@ -27,6 +27,8 @@ model User {
   // Relations
   accounts       Account[]
   sessions       Session[]
+  refreshTokens  RefreshToken[]
+  securityAuditLogs SecurityAuditLog[]
 
   @@map("common_user")
 }
@@ -106,34 +108,6 @@ model catalog_painting_detail {
   catalog_product catalog_product @relation(fields: [productId], references: [id])
 }
 
-model catalog_collectible_detail {
-  id              String          @id
-  productId       String          @unique
-  material        String
-  edition         String?
-  certificate     String?
-  rarity          String?
-  catalog_product catalog_product @relation(fields: [productId], references: [id])
-}
-
-model catalog_poster_detail {
-  id              String          @id
-  productId       String          @unique
-  size            String
-  paperType       String
-  printType       String
-  catalog_product catalog_product @relation(fields: [productId], references: [id])
-}
-
-model catalog_artist_ref {
-  id              String            @id
-  displayName     String
-  bio             String?
-  country         String?
-  handle          String?           @unique
-  catalog_product catalog_product[]
-}
-
 model catalog_variant {
   id                String              @id
   productId         String
@@ -146,28 +120,6 @@ model catalog_variant {
   orders_order_item orders_order_item[]
 
   @@index([productId], map: "catalog_variant_productId_fkey")
-}
-
-model wishlist_items {
-  id            String          @id
-  userId        String
-  productId     String
-  createdAt     DateTime        @default(now())
-  catalog_product catalog_product @relation(fields: [productId], references: [id])
-
-  @@index([productId], map: "wishlist_items_productId_fkey")
-}
-
-model orders_order_item {
-  id              String          @id
-  orderId         String
-  variantId       String
-  quantity        Int
-  priceCents      Int
-  catalog_variant catalog_variant @relation(fields: [variantId], references: [id])
-
-  @@index([orderId], map: "orders_order_item_orderId_fkey")
-  @@index([variantId], map: "orders_order_item_variantId_fkey")
 }
 
 // Enums

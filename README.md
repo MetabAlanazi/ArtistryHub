@@ -16,8 +16,7 @@ cp env.example .env.local
 
 # Database setup
 yarn db:generate
-yarn db:migrate
-yarn db:seed
+yarn db:pull
 
 # Start development
 yarn dev
@@ -80,6 +79,29 @@ This will create additional test users with different email patterns for compreh
 
 > All apps redirect to the main store (`http://localhost:3000/store`) when users log out.
 
+## 🗄️ **Database Policy**
+
+> **Single Database Rule**: We use exactly one database name (`art_commerce`) across all environments.
+
+### **Environment Configuration**
+- **Development**: `.env.development` → `mysql://root:root@localhost:3307/art_commerce`
+- **Production**: `.env.production` → `mysql://<user>:<pass>@<host>:3306/art_commerce`
+
+### **Prisma Configuration**
+- **Mode**: Introspection only (no migrations)
+- **Commands**: `yarn db:pull` + `yarn db:generate`
+- **Schema**: Maps to existing MySQL tables (`common_user`, `common_account`, etc.)
+- **NextAuth**: Uses Prisma models mapped to existing tables
+
+### **Admin User Reset**
+```bash
+# Reset admin credentials (development)
+cd packages/db
+npx ts-node scripts/reset-admin.ts
+
+# Credentials: admin@artistryhub.com / Admin2024!Secure#
+```
+
 ## 🛠️ **Development**
 
 ```bash
@@ -93,10 +115,8 @@ yarn workspace @artistry-hub/artist dev
 yarn workspace @artistry-hub/operator dev
 
 # Database operations
-yarn db:seed          # Seed full database with 12 users (requires .env)
-yarn db:seed:readme   # Seed only README test users
-yarn db:seed:auth     # Seed authentication users (current 12 users)
-yarn db:reset         # Reset database and run migrations
+yarn db:pull          # Introspect database and update schema
+yarn db:generate      # Generate Prisma client
 yarn db:studio        # Open Prisma Studio
 
 # Run all tests

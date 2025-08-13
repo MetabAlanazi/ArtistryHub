@@ -15,22 +15,26 @@
     "test": "turbo run test",
     "clean": "turbo run clean",
     "db:generate": "prisma generate --schema packages/db/prisma/schema.prisma",
-    "db:migrate": "prisma migrate dev --schema packages/db/prisma/schema.prisma",
-    "db:seed": "tsx packages/db/prisma/seed.ts",
-    "db:seed:readme": "tsx packages/db/prisma/seed-readme-users.ts",
-    "db:reset": "cd packages/db && yarn prisma migrate reset --force",
+    "db:pull": "prisma db pull --schema packages/db/prisma/schema.prisma",
     "db:studio": "prisma studio --schema packages/db/prisma/schema.prisma",
     "bff:dev": "cd apps/bff && yarn dev",
     "bff:build": "cd apps/bff && yarn build",
     "bff:start": "cd apps/bff && yarn start"
   },
   "devDependencies": {
+    "@types/node": "^24.2.1",
     "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
     "tsx": "^4.0.0",
-    "turbo": "^1.10.0"
+    "turbo": "^1.10.0",
+    "typescript": "^5.9.2"
   },
   "packageManager": "yarn@4.9.2",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "mysql2": "^3.14.3"
   }
 }
