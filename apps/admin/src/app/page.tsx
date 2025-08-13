@@ -24,7 +24,7 @@ export default function AdminHomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-600" />
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function AdminHomePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-600" />
         <p className="mt-4 text-gray-600">Redirecting...</p>
       </div>
     </div>

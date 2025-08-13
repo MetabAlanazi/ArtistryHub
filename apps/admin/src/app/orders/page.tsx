@@ -15,33 +15,43 @@ export default function OrdersPage() {
     }
   }, [status, router])
 
+  // Show loading while checking authentication
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600" />
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-600" />
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     )
   }
 
+  // Redirect to login if not authenticated
   if (status === 'unauthenticated') {
     return null
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
+      {/* Header */}
+      <div className="bg-white shadow border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
-          <p className="mt-2 text-gray-600">Track and manage customer orders</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
+              <p className="mt-2 text-gray-600">
+                Manage and track platform orders
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Orders Overview</h2>
+        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
+          <h2 className="text-lg font-medium text-gray-900 mb-2">Orders Management</h2>
           <p className="text-gray-600">Order management functionality coming soon...</p>
         </div>
       </div>
