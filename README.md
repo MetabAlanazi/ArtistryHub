@@ -26,33 +26,29 @@ yarn dev
 
 > ✅ **READY TO TEST**: The users below are currently working in your database.
 
-### **Current Test Users** (Active in Database - 12 Users)
+### **Current Test Users** (Active in Database - 5 Users)
 
 > ⚠️ **IMPORTANT**: These credentials are for testing only. Do not modify or update them.
 
-| Role                | Email                       | Password               | Access                             |
-| ------------------- | --------------------------- | ---------------------- | ---------------------------------- |
-| **Admin 1**         | `admin@artistryhub.com`     | `Admin2024!Secure#`    | All apps (3000-3004)               |
-| **Admin 2**         | `admin2@artistryhub.com`    | `Admin2024!Secure#`    | All apps (3000-3004)               |
-| **Artist 1**        | `artist1@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)        |
-| **Artist 2**        | `artist2@artistryhub.com`   | `Artist2024!Creative#` | Store + Artist (3000, 3002)        |
-| **Operator 1**      | `operator1@artistryhub.com` | `Operator2024!Work#`   | Store + Operator (3000, 3003)      |
-| **Operator 2**      | `operator2@artistryhub.com` | `Operator2024!Work#`   | Store + Operator (3000, 3003)      |
-| **Social Worker 1** | `social1@artistryhub.com`   | `Social2024!Help#`     | Store + Social Worker (3000, 3004) |
-| **Social Worker 2** | `social2@artistryhub.com`   | `Social2024!Help#`     | Store + Social Worker (3000, 3004) |
-| **Customer 1**      | `customer1@example.com`     | `Customer2024!Shop#`   | Store only (3000)                  |
-| **Customer 2**      | `customer2@example.com`     | `Customer2024!Shop#`   | Store only (3000)                  |
-| **Service 1**       | `service1@artistryhub.com`  | `Service2024!Support#` | Store + Service (3000)             |
-| **Service 2**       | `service2@artistryhub.com`  | `Service2024!Support#` | Store + Service (3000)             |
+| Role           | Email                      | Password               | Access                        |
+| -------------- | -------------------------- | ---------------------- | ----------------------------- |
+| **Admin 1**    | `admin@artistryhub.com`    | `Admin2024!Secure#`    | All apps (3000-3004)          |
+| **Operator 1** | `ops@artistryhub.com`      | `Operator2024!Secure#` | Store + Operator (3000, 3003) |
+| **Artist 1**   | `artist@artistryhub.com`   | `Artist2024!Secure#`   | Store + Artist (3000, 3002)   |
+| **Customer 1** | `customer@artistryhub.com` | `Customer2024!Secure#` | Store only (3000)             |
+| **Operator 2** | `operator@artistryhub.com` | `Operator2024!Secure#` | Store + Operator (3000, 3003) |
 
-> ✅ **VERIFIED**: These are the actual users from the seed file. All passwords use strong, unique combinations with uppercase, lowercase, numbers, and special characters.
+> ✅ **VERIFIED**: These are the actual users currently in your database. All passwords use strong, unique combinations with uppercase, lowercase, numbers, and special characters.
 > 🔒 **SECURE**: All passwords are securely hashed and ready for testing.
+> 📊 **NOTE**: Database currently contains 5 users (down from 12 in the original seed file).
 
 ### **Getting More Users** (Optional)
 
-> 🚀 **To get additional users, run**: `yarn db:seed` (requires .env file)
+> 🚀 **To get additional users, run**: `yarn db:seed` (requires proper DATABASE_URL setup)
 
 This will create additional test users with different email patterns for comprehensive testing.
+
+> ⚠️ **CURRENT STATE**: Your database has 5 users instead of the expected 12. This suggests the database was seeded with a different script (`reset-admin.ts`) rather than the main `seed.ts` script.
 
 ### **App URLs & Navigation**
 
@@ -84,16 +80,19 @@ This will create additional test users with different email patterns for compreh
 > **Single Database Rule**: We use exactly one database name (`art_commerce`) across all environments.
 
 ### **Environment Configuration**
+
 - **Development**: `.env.development` → `mysql://root:root@localhost:3307/art_commerce`
 - **Production**: `.env.production` → `mysql://<user>:<pass>@<host>:3306/art_commerce`
 
 ### **Prisma Configuration**
+
 - **Mode**: Introspection only (no migrations)
 - **Commands**: `yarn db:pull` + `yarn db:generate`
 - **Schema**: Maps to existing MySQL tables (`common_user`, `common_account`, etc.)
 - **NextAuth**: Uses Prisma models mapped to existing tables
 
 ### **Admin User Reset**
+
 ```bash
 # Reset admin credentials (development)
 cd packages/db

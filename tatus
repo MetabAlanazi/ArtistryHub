@@ -1,5 +1,0 @@
-[33m3bcc7ed[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrefactor/stability-001[m[33m, [m[1;33mtag: [m[1;33mpre-refactor-stability-001[m[33m, [m[1;31morigin/chore/monorepo-best-practices[m[33m, [m[1;32mchore/monorepo-best-practices[m[33m)[m feat: Rebuild artist, operator, and social-worker apps from scratch with dummy pages
-[33maf0f27d[m feat: Complete admin app rebuild with centralized authentication system
-[33ma4ffc24[m  Implement Enterprise-Grade SSO Session Management System
-[33mff53384[m  Temporarily Disable SessionManager to Get All Servers Running
-[33m0656f83[m  Fix Session Management Import Issues and Get Servers Running

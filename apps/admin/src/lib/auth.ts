@@ -6,8 +6,8 @@ export const authOptions: NextAuthOptions = {
   ...baseAuthOptions,
   // Admin-specific overrides can go here
   pages: {
-    ...baseAuthOptions.pages,
     signIn: '/auth/login', // Admin-specific login page
+    error: '/auth/error',
   },
   // Admin app configuration
   callbacks: {
@@ -20,5 +20,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true
     }
-  }
+  },
+  // Note: NextAuth doesn't support 'redirects' configuration
+  // The pages configuration above should handle the routing
 }

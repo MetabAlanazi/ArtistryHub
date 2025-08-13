@@ -26,10 +26,10 @@ jobs:
           fi
           
           # Fail if prisma migrate is used
-          if git grep -n "prisma migrate" -- ':!**/migrations_archive/**' 2>/dev/null; then
+          if git grep -n "prisma migrate" 2>/dev/null; then
             echo "❌ Do not use prisma migrate. Use prisma db pull + prisma generate."
             echo "Found these references:"
-            git grep -n "prisma migrate" -- ':!**/migrations_archive/**'
+            git grep -n "prisma migrate"
             exit 1
           fi
           

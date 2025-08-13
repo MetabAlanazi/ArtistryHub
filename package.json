@@ -34,7 +34,6 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "mysql2": "^3.14.3"
+    "bcryptjs": "^3.0.2"
   }
 }

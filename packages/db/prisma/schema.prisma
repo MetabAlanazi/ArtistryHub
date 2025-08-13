@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,24 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// NextAuth Models - Mapped to existing tables
 model User {
-  id             String   @id @default(cuid()) @map("id")
-  email          String   @unique @map("email")
-  name           String?  @map("name")
-  role           String?  @map("role")
-  status         String?  @map("status")
-  hashedPassword String?  @map("hashedPassword")
-  emailVerified  DateTime? @map("emailVerified")
-  mustReauthAt   DateTime? @map("mustReauthAt")
-  targetAppUrl   String?  @map("targetAppUrl")
-  createdAt      DateTime @default(now()) @map("createdAt")
-  updatedAt      DateTime @updatedAt @map("updatedAt")
+  id                   String                 @id @default(cuid()) @map("id")
+  email                String                 @unique @map("email")
+  name                 String?                @map("name")
+  role                 common_user_role       @default(customer) @map("role")
+  status               String                 @default("ACTIVE") @map("status")
+  mustReauthAt         DateTime?              @map("mustReauthAt")
+  targetAppUrl         String?                @map("targetAppUrl")
+  emailVerified        DateTime?              @map("emailVerified")
+  createdAt            DateTime               @default(now()) @map("createdAt")
+  hashedPassword       String?                @map("hashedPassword")
+  updatedAt            DateTime               @updatedAt @map("updatedAt")
+  accounts             Account[]
+  common_address       common_address[]
+  common_service_token common_service_token[]
+  sessions             Session[]
+  wishlist_items       wishlist_items[]
 
-  // Relations
-  accounts       Account[]
-  sessions       Session[]
-
+  @@index([email])
   @@map("common_user")
 }
 
@@ -37,17 +35,17 @@ model Account {
   type              String  @map("type")
   provider          String  @map("provider")
   providerAccountId String  @map("providerAccountId")
-  refresh_token     String? @map("refresh_token")
-  access_token      String? @map("access_token")
+  refresh_token     String? @map("refresh_token") @db.Text
+  access_token      String? @map("access_token") @db.Text
   expires_at        Int?    @map("expires_at")
+  token_type        String?
   scope             String? @map("scope")
-  id_token          String? @map("id_token")
+  id_token          String? @map("id_token") @db.Text
   session_state     String? @map("session_state")
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
+  @@index([userId], map: "common_account_userId_fkey")
   @@map("common_account")
 }
 
@@ -56,23 +54,22 @@ model Session {
   sessionToken String   @unique @map("sessionToken")
   userId       String   @map("userId")
   expires      DateTime @map("expires")
+  user         User     @relation(fields: [userId], references: [id])
 
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  @@index([userId], map: "common_session_userId_fkey")
   @@map("common_session")
 }
 
 model VerificationToken {
+  id         String   @id
   identifier String   @map("identifier")
   token      String   @unique @map("token")
   expires    DateTime @map("expires")
 
-  @@unique([identifier, token])
+  @@index([identifier])
   @@map("common_verification_token")
 }
 
-// Essential existing models (introspected)
 model catalog_product {
   id                         String                      @id
   sku                        String                      @unique
@@ -142,6 +139,7 @@ model catalog_variant {
   priceCents        Int
   stockLevel        Int                 @default(0)
   weightGrams       Int?
+  dimensions        Json?
   catalog_product   catalog_product     @relation(fields: [productId], references: [id])
   orders_order_item orders_order_item[]
 
@@ -149,12 +147,14 @@ model catalog_variant {
 }
 
 model wishlist_items {
-  id            String          @id
-  userId        String
-  productId     String
-  createdAt     DateTime        @default(now())
+  id              String          @id
+  userId          String
+  productId       String
+  createdAt       DateTime        @default(now())
   catalog_product catalog_product @relation(fields: [productId], references: [id])
+  common_user     User            @relation(fields: [userId], references: [id])
 
+  @@unique([userId, productId])
   @@index([productId], map: "wishlist_items_productId_fkey")
 }
 
@@ -164,22 +164,231 @@ model orders_order_item {
   variantId       String
   quantity        Int
   priceCents      Int
+  orders_order    orders_order    @relation(fields: [orderId], references: [id])
   catalog_variant catalog_variant @relation(fields: [variantId], references: [id])
 
   @@index([orderId], map: "orders_order_item_orderId_fkey")
   @@index([variantId], map: "orders_order_item_variantId_fkey")
 }
 
-// Enums
+model artists_commission {
+  id          String    @id
+  artistId    String
+  customerId  String
+  title       String
+  description String?
+  budgetCents Int
+  status      String    @default("PENDING")
+  deadline    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+}
+
+model artists_profile {
+  id          String  @id
+  userId      String  @unique
+  bio         String?
+  specialties Json?
+  portfolio   Json?
+  commission  Json?
+}
+
+model common_2fa_secret {
+  id        String   @id
+  userId    String   @unique
+  secret    String
+  enabled   Boolean  @default(false)
+  updatedAt DateTime
+}
+
+model common_address {
+  id          String  @id
+  userId      String?
+  line1       String
+  city        String
+  country     String
+  phone       String?
+  isDefault   Boolean @default(false)
+  common_user User?   @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "common_address_userId_fkey")
+}
+
+model common_audit_log {
+  id          String   @id
+  actorUserId String?
+  action      String
+  entity      String
+  entityId    String
+  meta        Json?
+  createdAt   DateTime @default(now())
+}
+
+model common_service_token {
+  id          String    @id
+  userId      String
+  name        String
+  tokenHash   String
+  scopes      String
+  active      Boolean   @default(true)
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  common_user User      @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "common_service_token_userId_fkey")
+}
+
+model ops_fulfillment {
+  id             String                 @id
+  orderId        String
+  status         ops_fulfillment_status @default(PENDING)
+  pickedByUserId String?
+  packedByUserId String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime
+  orders_order   orders_order           @relation(fields: [orderId], references: [id])
+  ops_shipment   ops_shipment[]
+
+  @@index([orderId], map: "ops_fulfillment_orderId_fkey")
+}
+
+model ops_shipment {
+  id              String          @id
+  fulfillmentId   String
+  carrier         String
+  tracking        String
+  labelUrl        String?
+  costCents       Int?
+  etaDate         DateTime?
+  ops_fulfillment ops_fulfillment @relation(fields: [fulfillmentId], references: [id])
+
+  @@index([fulfillmentId], map: "ops_shipment_fulfillmentId_fkey")
+}
+
+model ops_support_ticket {
+  id               String                      @id
+  userId           String
+  subject          String
+  description      String
+  status           ops_support_ticket_status   @default(OPEN)
+  priority         ops_support_ticket_priority @default(MEDIUM)
+  assignedToUserId String?
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime
+}
+
+model orders_order {
+  id                String              @id
+  userId            String
+  email             String
+  status            orders_order_status @default(PENDING)
+  currency          String              @default("SAR")
+  totalCents        Int
+  placedAt          DateTime            @default(now())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  ops_fulfillment   ops_fulfillment[]
+  orders_order_item orders_order_item[]
+  orders_payment    orders_payment[]
+}
+
+model orders_payment {
+  id           String                @id
+  orderId      String
+  amountCents  Int
+  currency     String                @default("SAR")
+  status       orders_payment_status @default(PENDING)
+  method       String
+  reference    String?
+  processedAt  DateTime?
+  orders_order orders_order          @relation(fields: [orderId], references: [id])
+
+  @@index([orderId], map: "orders_payment_orderId_fkey")
+}
+
+model social_channel {
+  id          String                  @id
+  platform    social_channel_platform
+  handle      String
+  isActive    Boolean                 @default(true)
+  lastPosted  DateTime?
+  social_post social_post[]
+}
+
+model social_post {
+  id             String         @id
+  channelId      String
+  content        String
+  media          Json?
+  scheduledAt    DateTime?
+  postedAt       DateTime?
+  status         String         @default("DRAFT")
+  social_channel social_channel @relation(fields: [channelId], references: [id])
+
+  @@index([channelId], map: "social_post_channelId_fkey")
+}
+
 enum catalog_product_type {
   PAINTING
   POSTER
   COLLECTIBLE
 }
 
+enum social_channel_platform {
+  INSTAGRAM
+  TWITTER
+  FACEBOOK
+  TIKTOK
+}
+
+enum ops_fulfillment_status {
+  PENDING
+  PICKED
+  PACKED
+  SHIPPED
+  DELIVERED
+}
+
+enum common_user_role {
+  customer
+  artist
+  admin
+  operator
+  service
+  social_worker
+}
+
+enum orders_order_status {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum ops_support_ticket_status {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum orders_payment_status {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum ops_support_ticket_priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 enum catalog_product_status {
   DRAFT
-  ACTIVE
-  INACTIVE
+  PUBLISHED
   ARCHIVED
 }

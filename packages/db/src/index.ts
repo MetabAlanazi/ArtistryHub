@@ -21,5 +21,5 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// Re-export commonly used types and enums
-export { UserRole } from '@prisma/client'
+// Note: UserRole enum doesn't exist in current schema
+// export { UserRole } from '@prisma/client'

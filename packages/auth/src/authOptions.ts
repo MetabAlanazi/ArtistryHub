@@ -31,9 +31,7 @@ export const baseAuthOptions: NextAuthOptions = {
               name: true,
               hashedPassword: true,
               role: true,
-              status: true,
-              permissionsVersion: true,
-              lastLoginAt: true
+              status: true
             }
           })
 
@@ -53,11 +51,11 @@ export const baseAuthOptions: NextAuthOptions = {
             return null
           }
 
-          // Update last login time
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { lastLoginAt: new Date() }
-          })
+          // Note: lastLoginAt field doesn't exist in current schema
+          // await prisma.user.update({
+          //   where: { id: user.id },
+          //   data: { lastLoginAt: new Date() }
+          // })
 
           // Create session tokens
           const { accessToken, refreshToken } = sessionManager.createSession({
@@ -65,8 +63,8 @@ export const baseAuthOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             role: user.role as UserRole,
-            permissionsVersion: user.permissionsVersion || 1,
-            lastLoginAt: user.lastLoginAt?.getTime() || Date.now(),
+            permissionsVersion: 1,
+            lastLoginAt: Date.now(),
             isActive: true
           } as AuthUser, credentials.appName)
 
@@ -76,8 +74,8 @@ export const baseAuthOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             role: user.role,
-            permissionsVersion: user.permissionsVersion || 1,
-            lastLoginAt: user.lastLoginAt?.getTime() || Date.now(),
+            permissionsVersion: 1,
+            lastLoginAt: Date.now(),
             isActive: true,
             accessToken,
             refreshToken
@@ -107,7 +105,7 @@ export const baseAuthOptions: NextAuthOptions = {
         const typedUser = user as AuthUser & { accessToken?: string; refreshToken?: string }
         token.sub = typedUser.id
         token.role = typedUser.role
-        token.permissionsVersion = typedUser.permissionsVersion
+        token.permissionsVersion = typedUser.permissionsVersion || 1
         token.accessToken = typedUser.accessToken
         token.refreshToken = typedUser.refreshToken
         token.expiresAt = Date.now() + (15 * 60 * 1000) // 15 minutes
@@ -141,7 +139,7 @@ export const baseAuthOptions: NextAuthOptions = {
         const typedSession = session as any
         typedSession.user.id = token.sub as string
         typedSession.user.role = token.role as UserRole
-        typedSession.user.permissionsVersion = token.permissionsVersion as number
+        typedSession.user.permissionsVersion = (token.permissionsVersion as number) || 1
         typedSession.user.lastLoginAt = token.issuedAt as number
         typedSession.user.isActive = true
 
