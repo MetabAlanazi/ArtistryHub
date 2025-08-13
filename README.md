@@ -118,6 +118,9 @@ yarn db:pull          # Introspect database and update schema
 yarn db:generate      # Generate Prisma client
 yarn db:studio        # Open Prisma Studio
 
+# Health check
+yarn ts-node packages/db/scripts/health.ts  # Test database connection and common_user table
+
 # Run all tests
 yarn test
 

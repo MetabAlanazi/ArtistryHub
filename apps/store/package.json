@@ -13,8 +13,7 @@
     "test:ui": "vitest",
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
-    "prisma:gen": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:gen": "prisma generate"
   },
   "dependencies": {
     "@artistry-hub/auth": "workspace:*",
